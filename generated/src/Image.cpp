@@ -41,7 +41,7 @@ void Image::save_to_memory() {
     cv::Mat resized;
     resize(image, resized, cv::Size(scaled_width, scaled_height), cv::INTER_LINEAR);
 
-    std::string outputPath = "/Users/stefanutflorescu/Downloads/PhotoEditorPhoto-2/resources/temp.jpg";
+    std::string outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg";
     if (cv::imwrite(outputPath, resized)) {
         std::cout << "Image saved successfully to " << outputPath << std::endl;
     } else {
@@ -53,7 +53,7 @@ void Image::save_to_memory() {
 
 void Image::display_image(sf::RenderWindow& window) {
     sf::Texture texture;
-    if (!texture.loadFromFile("/Users/stefanutflorescu/Downloads/PhotoEditorPhoto-2/resources/temp.jpg")) {
+    if (!texture.loadFromFile("/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg")) {
         std::cerr << "Error loading image!" << std::endl;
         return;
     }

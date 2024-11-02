@@ -86,7 +86,7 @@ void OpenImageButton::update(sf::RenderWindow& window, const sf::Event& event) {
     if (isMouseOver(window)) {
         buttonShape.setFillColor(sf::Color(200, 0, 0));
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-            image = new Image("/Users/stefanutflorescu/Downloads/PhotoEditorPhoto-2/resources/image.jpg");
+            image = new Image("/Users/stefanutflorescu/Downloads/OOP-main/resources/image.jpg");
             Frame::switchReady();
         }
     } else {
