@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.29)
 project(OOP-main)
 enable_testing()
 
+set(CMAKE_CXX_STANDARD 20)  # Change this to 14, 17, or 20 as needed
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # Find OpenCV package
 find_package(OpenCV REQUIRED)
 
@@ -19,6 +23,11 @@ add_executable(OOP-main
         generated/src/Helper.cpp
 )
 
+add_executable(my_tests
+        /Users/stefanutflorescu/Downloads/OOP-main/generated/src/test.cpp
+        /Users/stefanutflorescu/Downloads/OOP-main/generated/include/test.h
+        /Users/stefanutflorescu/Downloads/OOP-main/generated/include/doctest.h
+)
 
 # Specify include directories for your project
 target_include_directories(OOP-main PRIVATE
