@@ -27,7 +27,29 @@ add_executable(my_tests
         /Users/stefanutflorescu/Downloads/OOP-main/generated/src/test.cpp
         /Users/stefanutflorescu/Downloads/OOP-main/generated/include/test.h
         /Users/stefanutflorescu/Downloads/OOP-main/generated/include/doctest.h
+        generated/src/Image.cpp
+        generated/src/Filter.cpp
+        generated/src/Button.cpp
+        generated/src/Frame.cpp
+        generated/src/Text_Frame.cpp
+        generated/src/Helper.cpp
 )
+
+# Specify include directories for your project
+target_include_directories(my_tests PRIVATE
+        src
+        ${OpenCV_INCLUDE_DIRS}
+        ${SFML_INCLUDE_DIRS}  # Include SFML headers
+)
+
+# Link OpenCV and SFML libraries to your executable
+target_link_libraries(my_tests PRIVATE
+        ${OpenCV_LIBS}
+        sfml-graphics
+        sfml-window
+        sfml-system
+)
+
 
 # Specify include directories for your project
 target_include_directories(OOP-main PRIVATE

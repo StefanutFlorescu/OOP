@@ -16,6 +16,7 @@ Filter::Filter(const std::string& path) : path(path) {
 }
 
 Filter::Filter(const Filter &filter) {
+    this->path = filter.path;
     this->image = filter.image.clone();
     //filter.image.copyTo(this->image);
 }
@@ -30,7 +31,7 @@ Filter::~Filter() {
 }
 
 std::ostream &operator<<(std::ostream &os, const Filter &filter) {
-    os << "filter.image";
+    os << std::string(filter.path);
     return os;
 }
 

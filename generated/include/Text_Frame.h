@@ -10,6 +10,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
+#include <iostream>
 #include <SFML/Window/VideoMode.hpp>
 
 #include "Button.h"

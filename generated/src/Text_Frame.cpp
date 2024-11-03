@@ -42,7 +42,7 @@ Text_Frame::~Text_Frame() {
 }
 
 std::ostream& operator<<(std::ostream& os, const Text_Frame& t) {
-    std::cout<<"Text_Frame has been rendered with width: "<<t.width<<" and height"<< t.height <<std::endl;
+    os<<"Text_Frame has been rendered with width: "<<t.width<<" and height "<< t.height;
     return os;
 }
 

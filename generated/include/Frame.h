@@ -17,7 +17,7 @@ class Frame {
     OpenInputButton *searchImageButton;
 public:
     Frame(const std::string& title);
-    ~Frame() = default;
+    ~Frame();
     Frame(Frame const&) = delete;
     Frame(Frame&&) = delete;
     Frame& operator=(Frame const&) = delete;

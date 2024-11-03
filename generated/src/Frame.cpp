@@ -26,9 +26,13 @@ Frame::Frame(const std::string& title){
 
 }
 std::ostream& operator<<(std::ostream& os, const Frame& frame) {
-    os << "Frame-ul are" << Frame::getWidth() << "x" << Frame::getHeight() << std::endl;
+    os << "Frame-ul are " << Frame::getWidth() << " x " << Frame::getHeight() << " y";
     return os;
 }
+Frame::~Frame(){
+    delete searchImageButton;// Stergea unui pointer null nu ne afecteaza
+}
+
 int Frame::getWidth() {
     return WIDTH;
 }
