@@ -16,7 +16,7 @@ class Frame {
     static bool READY;
     OpenInputButton *searchImageButton;
 public:
-    Frame(const std::string& title);
+    explicit Frame(const std::string& title);
     ~Frame();
     Frame(Frame const&) = delete;
     Frame(Frame&&) = delete;
