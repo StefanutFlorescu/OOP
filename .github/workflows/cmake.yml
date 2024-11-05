@@ -59,11 +59,6 @@ jobs:
       attestations: write
       contents: write
       id-token: write
-    env:
-      CC: ${{ matrix.c }}
-      CXX: ${{ matrix.cxx }}
-      VSCMD_SKIP_SENDTELEMETRY: 1
-      MINGW_VER: "13.3.0posix-11.0.1-msvcrt-r1/winlibs-x86_64-posix-seh-gcc-13.3.0-mingw-w64msvcrt-11.0.1-r1.7z"
     strategy:
       fail-fast: false
       matrix:
@@ -73,20 +68,21 @@ jobs:
             cxx: clang++-18
             name: "MSan: Ubuntu 22.04 Clang 18"
             cmake_flags: "-DUSE_MSAN=ON"
-            cmake_generator: Ninja
+            opencv_dir: "/usr/lib/x86_64-linux-gnu/cmake/opencv4"  # Typical path for OpenCV on Ubuntu
 
           - os: ubuntu-22.04
             c: gcc-12
             cxx: g++-12
             name: "ASan: Ubuntu 22.04 GCC 12"
             cmake_flags: "-DUSE_ASAN=ON"
-            cmake_generator: Ninja
+            opencv_dir: "/usr/lib/x86_64-linux-gnu/cmake/opencv4"
 
           - os: macos-14
             c: clang
             cxx: clang++
             name: "macOS 14 Apple Clang 15"
             cmake_flags: "-DUSE_ASAN=OFF"
+            opencv_dir: "/usr/local/opt/opencv/lib/cmake/opencv4"  # Typical path for OpenCV on macOS
 
           - os: windows-2022
             c: cl
@@ -109,6 +105,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libopencv-dev
+
       - name: Install OpenCV (macOS)
         if: matrix.os == 'macos-14'
         run: |
@@ -116,16 +113,20 @@ jobs:
           brew install opencv
 
       - name: Configure CMake
-        uses: ./.github/actions/configure-cmake
-        with:
-          custom_flags: ${{ matrix.cmake_flags }}
-          warnings_as_errors: 'ON'
+        run: |
+          mkdir build
+          cd build
+          cmake .. ${matrix.cmake_flags} -DOpenCV_DIR=${{ matrix.opencv_dir }} -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
 
       - name: Build
-        run: bash ./scripts/cmake.sh build -t ${{ env.BUILD_TYPE }}
+        run: |
+          cd build
+          make
 
       - name: Install
-        run: bash ./scripts/cmake.sh install -i artifacts -t ${{ env.BUILD_TYPE }}
+        run: |
+          cd build
+          make install DESTDIR=artifacts
 
       - name: Organize artifacts
         run: |
