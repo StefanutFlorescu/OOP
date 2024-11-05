@@ -26,13 +26,10 @@ runs:
 
     - name: Install cppcheck
       shell: bash
-      # this step is fast, no need for caching
       run: |
         cd cppcheck
         sudo cmake --install build
 
-    # The flag CMAKE_EXPORT_COMPILE_COMMANDS generates compile_commands.json
-    # which is used by cppcheck and clang-tidy
     - name: Configure CMake
       uses: ./.github/actions/configure-cmake
       with:
@@ -41,4 +38,5 @@ runs:
     - name: Cppcheck
       shell: bash
       run: |
-        bash ./scripts/run_cppcheck.sh
+        OPENCV_INCLUDE_DIRS=$(cmake -L . | grep OpenCV_INCLUDE_DIRS | cut -d '=' -f 2)
+        bash ./scripts/run_cppcheck.sh -I"$OPENCV_INCLUDE_DIRS"
