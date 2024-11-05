@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD 20)  # Change this to 14, 17, or 20 as needed
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+#TEST
+set(OpenCV_DIR "/opt/homebrew/Cellar/opencv/4.10.0_12/lib/cmake/opencv4")
+
 # Find OpenCV package
 find_package(OpenCV REQUIRED)
 
