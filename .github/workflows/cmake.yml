@@ -108,6 +108,19 @@ jobs:
           brew update
           brew install opencv
 
+      - name: Verify OpenCV installation
+        run: |
+          if [ -d "${{ matrix.opencv_dir }}" ]; then
+            echo "OpenCV directory found: ${{ matrix.opencv_dir }}"
+            ls ${{ matrix.opencv_dir }}
+          else
+            echo "OpenCV directory not found!"
+            exit 1
+          fi
+
+      - name: Check CMake version
+        run: cmake --version
+
       - name: Configure CMake
         run: |
           mkdir build
@@ -115,7 +128,7 @@ jobs:
           echo "CMake Flags: ${{ matrix.cmake_flags }}"
           echo "OpenCV Dir: ${{ matrix.opencv_dir }}"
           echo "CMake Build Type: ${{ env.BUILD_TYPE }}"
-          cmake .. ${{ matrix.cmake_flags }} -DOpenCV_DIR=${{ matrix.opencv_dir }} -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          cmake .. "${{ matrix.cmake_flags }}" -DOpenCV_DIR="${{ matrix.opencv_dir }}" -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}"
 
       - name: Build
         run: |
