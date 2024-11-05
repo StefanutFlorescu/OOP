@@ -78,7 +78,7 @@ jobs:
             cxx: clang++
             name: "macOS 14 Apple Clang 15"
             cmake_flags: "-DUSE_ASAN=OFF"
-            opencv_dir: "/opt/homebrew/Cellar/opencv/4.10.0_12/lib/cmake/opencv4"
+            opencv_dir: "/usr/local/lib/cmake/opencv4"
 
           - os: windows-2022
             c: cl
