@@ -121,6 +121,7 @@ jobs:
         run: |
           brew install sfml
 
+      # Add checks for successful installations
       - name: Verify OpenCV installation
         run: |
           if [ -d "${{ matrix.opencv_dir }}" ]; then
@@ -163,6 +164,13 @@ jobs:
         run: |
           cd build
           make install DESTDIR=artifacts
+
+      - name: Verify installation files
+        run: |
+          echo "Checking installed files in artifacts:"
+          ls -la artifacts
+          echo "Checking installed files in artifacts/bin:"
+          ls -la artifacts/bin
 
       - name: Organize artifacts
         run: |
