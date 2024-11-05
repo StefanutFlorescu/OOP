@@ -2,10 +2,10 @@ name: C++ CI
 
 on:
   push:
-    branches: ['*'] # NOTE: replace/update with appropriate branch name(s)
+    branches: ['*'] # Replace with specific branches as needed
     tags: ['*']
   pull_request:
-    branches: ['*'] # NOTE: replace/update with appropriate branch name(s)
+    branches: ['*'] # Replace with specific branches as needed
   workflow_dispatch:
     inputs:
       build_type:
@@ -35,40 +35,35 @@ defaults:
 
 jobs:
   cppcheck:
-    name: "Cppcheck"
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
       - name: Run cppcheck
         uses: ./.github/actions/cppcheck
 
   clang-tidy:
-    name: "Clang-Tidy"
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
       - name: Run clang-tidy
         uses: ./.github/actions/clang-tidy
 
   build:
-    name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 8
     permissions:
       attestations: write
       contents: write
       id-token: write
-
     env:
       CC: ${{ matrix.c }}
       CXX: ${{ matrix.cxx }}
       VSCMD_SKIP_SENDTELEMETRY: 1
       MINGW_VER: "13.3.0posix-11.0.1-msvcrt-r1/winlibs-x86_64-posix-seh-gcc-13.3.0-mingw-w64msvcrt-11.0.1-r1.7z"
-
     strategy:
       fail-fast: false
       matrix:
@@ -100,21 +95,21 @@ jobs:
             cmake_flags: "-DUSE_ASAN=ON"
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set timestamp and zip name
         run: |
           echo "TIMESTAMP=$(date +%Y-%m-%d-%H-%M-%S)" >> ${GITHUB_ENV}
-          echo "ZIP_NAME=$(echo "${GITHUB_REPOSITORY}_${{ env.BUILD_TYPE }}_${{ matrix.os }}_${{ matrix.cxx }}${{ matrix.asan_name }}" | sed 's|/|_|')" >> ${GITHUB_ENV}
+          ZIP_NAME="${GITHUB_REPOSITORY}_${{ env.BUILD_TYPE }}_${{ matrix.os }}_${{ matrix.cxx }}"
+          echo "ZIP_NAME=$(echo "$ZIP_NAME" | sed 's|/|_|')" >> ${GITHUB_ENV}
 
-      - name: Install OpenCV on Linux
+      - name: Install OpenCV
         if: matrix.os == 'ubuntu-22.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libopencv-dev
-
-      - name: Install OpenCV on macOS
+      - name: Install OpenCV (macOS)
         if: matrix.os == 'macos-14'
         run: |
           brew update
@@ -127,16 +122,14 @@ jobs:
           warnings_as_errors: 'ON'
 
       - name: Build
-        run: |
-          bash ./scripts/cmake.sh build -t ${{ env.BUILD_TYPE }}
+        run: bash ./scripts/cmake.sh build -t ${{ env.BUILD_TYPE }}
 
       - name: Install
-        run: |
-          bash ./scripts/cmake.sh install -i artifacts -t ${{ env.BUILD_TYPE }}
+        run: bash ./scripts/cmake.sh install -i artifacts -t ${{ env.BUILD_TYPE }}
 
-      - name: Move artifacts
+      - name: Organize artifacts
         run: |
-          mkdir ${{ env.ZIP_NAME }}
+          mkdir -p ${{ env.ZIP_NAME }}
           mv artifacts/${{ env.BIN_DIR }}/* ${{ env.ZIP_NAME }}
           ls -la ${{ env.ZIP_NAME }}
 
@@ -146,6 +139,6 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ZIP_NAME }}_${{ env.TIMESTAMP }}
+          name: "${{ env.ZIP_NAME }}_${{ env.TIMESTAMP }}"
           path: ${{ env.ZIP_NAME }}
           retention-days: 30
