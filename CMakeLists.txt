@@ -2,15 +2,21 @@ cmake_minimum_required(VERSION 3.29)
 project(OOP-main)
 enable_testing()
 
-set(CMAKE_CXX_STANDARD 20)  # Change this to 14, 17, or 20 as needed
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-#TEST
+# Set the OpenCV directory to where the OpenCVConfig.cmake is located
 set(OpenCV_DIR "/opt/homebrew/Cellar/opencv/4.10.0_12/lib/cmake/opencv4")
 
 # Find OpenCV package
 find_package(OpenCV REQUIRED)
+
+if(OpenCV_FOUND)
+    message(STATUS "OpenCV found: ${OpenCV_VERSION}")
+else()
+    message(FATAL_ERROR "OpenCV not found.")
+endif()
 
 # Find SFML package
 find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
@@ -27,9 +33,9 @@ add_executable(OOP-main
 )
 
 add_executable(my_tests
-        /Users/stefanutflorescu/Downloads/OOP-main/generated/src/test.cpp
-        /Users/stefanutflorescu/Downloads/OOP-main/generated/include/test.h
-        /Users/stefanutflorescu/Downloads/OOP-main/generated/include/doctest.h
+        generated/src/test.cpp
+        generated/include/test.h
+        generated/include/doctest.h
         generated/src/Image.cpp
         generated/src/Filter.cpp
         generated/src/Button.cpp
@@ -42,7 +48,7 @@ add_executable(my_tests
 target_include_directories(my_tests PRIVATE
         src
         ${OpenCV_INCLUDE_DIRS}
-        ${SFML_INCLUDE_DIRS}  # Include SFML headers
+        ${SFML_INCLUDE_DIRS}
 )
 
 # Link OpenCV and SFML libraries to your executable
@@ -53,20 +59,17 @@ target_link_libraries(my_tests PRIVATE
         sfml-system
 )
 
-
-# Specify include directories for your project
+# Specify include directories for your main project
 target_include_directories(OOP-main PRIVATE
         src
         ${OpenCV_INCLUDE_DIRS}
-        ${SFML_INCLUDE_DIRS}  # Include SFML headers
+        ${SFML_INCLUDE_DIRS}
 )
 
-# Link OpenCV and SFML libraries to your executable
+# Link OpenCV and SFML libraries to your main project
 target_link_libraries(OOP-main PRIVATE
         ${OpenCV_LIBS}
         sfml-graphics
         sfml-window
         sfml-system
 )
-
-
