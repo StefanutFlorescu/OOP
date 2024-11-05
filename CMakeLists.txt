@@ -8,6 +8,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Set the OpenCV directory to where the OpenCVConfig.cmake is located
 set(OpenCV_DIR "/opt/homebrew/Cellar/opencv/4.10.0_12/lib/cmake/opencv4")
+# Set CMAKE_PREFIX_PATH
+set(CMAKE_PREFIX_PATH "/opt/homebrew/Cellar/opencv/4.10.0_12/lib/cmake/opencv4")
 
 # Find OpenCV package
 find_package(OpenCV REQUIRED)
