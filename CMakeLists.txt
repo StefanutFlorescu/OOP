@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.29)
 project(OOP-main)
+
 enable_testing()
 
 set(CMAKE_CXX_STANDARD 20)
@@ -20,7 +21,7 @@ endif()
 set(SFML_DIR "/opt/homebrew/opt/sfml/lib/cmake/SFML")
 find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
 
-# Create the executable
+# Create the main executable
 add_executable(OOP-main
         main.cpp
         generated/src/Image.cpp
@@ -31,6 +32,7 @@ add_executable(OOP-main
         generated/src/Helper.cpp
 )
 
+# Create the test executable
 add_executable(my_tests
         generated/src/test.cpp
         generated/include/test.h
@@ -43,14 +45,29 @@ add_executable(my_tests
         generated/src/Helper.cpp
 )
 
-# Specify include directories for your project
+# Specify include directories for the main project
+target_include_directories(OOP-main PRIVATE
+        src
+        ${OpenCV_INCLUDE_DIRS}
+        ${SFML_INCLUDE_DIRS}
+)
+
+# Specify include directories for your tests
 target_include_directories(my_tests PRIVATE
         src
         ${OpenCV_INCLUDE_DIRS}
         ${SFML_INCLUDE_DIRS}
 )
 
-# Link OpenCV and SFML libraries to your executable
+# Link OpenCV and SFML libraries to your main executable
+target_link_libraries(OOP-main PRIVATE
+        ${OpenCV_LIBS}
+        sfml-graphics
+        sfml-window
+        sfml-system
+)
+
+# Link OpenCV and SFML libraries to your test executable
 target_link_libraries(my_tests PRIVATE
         ${OpenCV_LIBS}
         sfml-graphics
@@ -58,17 +75,12 @@ target_link_libraries(my_tests PRIVATE
         sfml-system
 )
 
-# Specify include directories for your main project
-target_include_directories(OOP-main PRIVATE
-        src
-        ${OpenCV_INCLUDE_DIRS}
-        ${SFML_INCLUDE_DIRS}
-)
+# Install the executables
+install(TARGETS OOP-main
+        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
-# Link OpenCV and SFML libraries to your main project
-target_link_libraries(OOP-main PRIVATE
-        ${OpenCV_LIBS}
-        sfml-graphics
-        sfml-window
-        sfml-system
-)
+install(TARGETS my_tests
+        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+
+# Optionally, specify installation of other files (e.g., headers, resources)
+# install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
