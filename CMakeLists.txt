@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Find OpenCV package
-set(OpenCV_DIR /usr/local/lib/cmake/opencv4)
+set(OpenCV_DIR /usr/local/lib/cmake/opencv4/OpenCVConfig.cmake)
 find_package(OpenCV REQUIRED)
 
 if(OpenCV_FOUND)
