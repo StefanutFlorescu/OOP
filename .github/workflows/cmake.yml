@@ -65,6 +65,7 @@ jobs:
             name: "MSan: Ubuntu 22.04 Clang 18"
             cmake_flags: "-DUSE_MSAN=ON"
             opencv_dir: "/usr/lib/x86_64-linux-gnu/cmake/opencv4"
+            sfml_dir: "/usr/lib/x86_64-linux-gnu/cmake/SFML"
 
           - os: ubuntu-22.04
             c: gcc-12
@@ -72,6 +73,7 @@ jobs:
             name: "ASan: Ubuntu 22.04 GCC 12"
             cmake_flags: "-DUSE_ASAN=ON"
             opencv_dir: "/usr/lib/x86_64-linux-gnu/cmake/opencv4"
+            sfml_dir: "/usr/lib/x86_64-linux-gnu/cmake/SFML"
 
           - os: macos-14
             c: clang
@@ -79,6 +81,7 @@ jobs:
             name: "macOS 14 Apple Clang 15"
             cmake_flags: "-DUSE_ASAN=OFF"
             opencv_dir: "/usr/local/lib/cmake/opencv4"
+            sfml_dir: "/opt/homebrew/opt/sfml/lib/cmake/SFML"
 
           - os: windows-2022
             c: cl
@@ -118,6 +121,16 @@ jobs:
             exit 1
           fi
 
+      - name: Verify SFML installation
+        run: |
+          if [ -d "${{ matrix.sfml_dir }}" ]; then
+            echo "SFML directory found: ${{ matrix.sfml_dir }}"
+            ls ${{ matrix.sfml_dir }}
+          else
+            echo "SFML directory not found!"
+            exit 1
+          fi
+
       - name: Check CMake version
         run: cmake --version
 
@@ -127,8 +140,9 @@ jobs:
           cd build
           echo "CMake Flags: ${{ matrix.cmake_flags }}"
           echo "OpenCV Dir: ${{ matrix.opencv_dir }}"
+          echo "SFML Dir: ${{ matrix.sfml_dir }}"
           echo "CMake Build Type: ${{ env.BUILD_TYPE }}"
-          cmake .. "${{ matrix.cmake_flags }}" -DOpenCV_DIR="${{ matrix.opencv_dir }}" -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}"
+          cmake .. "${{ matrix.cmake_flags }}" -DOpenCV_DIR="${{ matrix.opencv_dir }}" -DSFML_DIR="${{ matrix.sfml_dir }}" -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}"
 
       - name: Build
         run: |
