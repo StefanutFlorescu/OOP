@@ -55,10 +55,6 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 8
-    permissions:
-      attestations: write
-      contents: write
-      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -68,7 +64,7 @@ jobs:
             cxx: clang++-18
             name: "MSan: Ubuntu 22.04 Clang 18"
             cmake_flags: "-DUSE_MSAN=ON"
-            opencv_dir: "/usr/lib/x86_64-linux-gnu/cmake/opencv4"  # Typical path for OpenCV on Ubuntu
+            opencv_dir: "/usr/lib/x86_64-linux-gnu/cmake/opencv4"
 
           - os: ubuntu-22.04
             c: gcc-12
@@ -82,7 +78,7 @@ jobs:
             cxx: clang++
             name: "macOS 14 Apple Clang 15"
             cmake_flags: "-DUSE_ASAN=OFF"
-            opencv_dir: "/usr/local/opt/opencv/lib/cmake/opencv4"  # Typical path for OpenCV on macOS
+            opencv_dir: "/usr/local/opt/opencv/lib/cmake/opencv4"
 
           - os: windows-2022
             c: cl
