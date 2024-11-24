@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Find OpenCV package
-set(OpenCV_DIR "/usr/local/lib/cmake/opencv4")
+set(OpenCV_DIR "${CMAKE_SOURCE_DIR}/../cmake/opencv4")
 find_package(OpenCV REQUIRED)
 
 if(OpenCV_FOUND)
@@ -43,6 +43,8 @@ add_executable(my_tests
         generated/src/Frame.cpp
         generated/src/Text_Frame.cpp
         generated/src/Helper.cpp
+        generated/include/Exception.cpp
+        generated/include/Exception.h
 )
 
 # Specify include directories for the main project

@@ -77,7 +77,6 @@ void Button::change_text(const std::string &text) {
 
 
 
-
 OpenImageButton::OpenImageButton(const float x, const float y, const float width, const float height, const std::string &text)
     : Button(x, y, width, height, text){}
 
@@ -86,8 +85,15 @@ void OpenImageButton::update(sf::RenderWindow& window, const sf::Event& event) {
     if (isMouseOver(window)) {
         buttonShape.setFillColor(sf::Color(200, 0, 0));
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-            image = new Image("/Users/stefanutflorescu/Downloads/OOP-main/resources/image.jpg");
-            Frame::switchReady();
+            if (!std::filesystem::exists(imagePath)) {
+                std::cout<<"File Path :"<<imagePath<<std::endl;
+                std::cerr << "Error: Image file does not exist at path: " << imagePath << std::endl;
+            }
+            else
+            {
+                image = new Image(imagePath);
+                Frame::switchReady();
+            }
         }
     } else {
         buttonShape.setFillColor(sf::Color(105, 1, 1));
@@ -112,7 +118,7 @@ void OpenInputButton::update(sf::RenderWindow& window, const sf::Event& event) {
         buttonShape.setFillColor(sf::Color(200, 0, 0));
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
             if(!Frame::getReady()) {
-                text_input_frame = new Text_Frame(500,300,window);
+                text_input_frame = new Text_Frame(1000,300,window,"Open");
             } else {
                 Frame::switchReady();
             }
@@ -125,4 +131,228 @@ void OpenInputButton::update(sf::RenderWindow& window, const sf::Event& event) {
 OpenInputButton::~OpenInputButton() {
     delete text_input_frame;//Daca dezalocam un nullptr nu se intampla nimic
 }
+
+
+SaveOutputButton::SaveOutputButton(const float x, const float y, const float width, const float height, const std::string &text)
+    : Button(x, y, width, height, text){}
+
+void SaveOutputButton::setOutputPath(const std::string& inputString)
+{
+    output_path = inputString;
+}
+
+void SaveOutputButton::update(sf::RenderWindow& window, const sf::Event& event) {
+    if (isMouseOver(window)) {
+        buttonShape.setFillColor(sf::Color(200, 0, 0));
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+            if (!std::filesystem::exists("/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg")) {
+                std::cerr << "Error: Image file does not exist at path: " <<"/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg" << std::endl;
+            }
+            else
+            {
+                cv::Mat image = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg", cv::IMREAD_COLOR);
+                if (cv::imwrite(output_path, image)) {
+                    std::cout << "Image saved successfully to " << output_path << std::endl;
+                    Frame::switchReady();
+                } else {
+                    std::cerr << "Failed to save the image!" << std::endl;
+                }
+            }
+        }
+    } else {
+        buttonShape.setFillColor(sf::Color(105, 1, 1));
+    }
+}
+
+SaveOutputButton::~SaveOutputButton() = default;
+
+
+SaveImageButton::SaveImageButton(const float x, const float y, const float width, const float height, const std::string &text)
+    : Button(x, y, width, height, text), text_input_frame(nullptr) {
+}
+
+void SaveImageButton::update(sf::RenderWindow& window, const sf::Event& event) {
+    if (isMouseOver(window)) {
+        buttonShape.setFillColor(sf::Color(200, 0, 0));
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
+                std::cout<<"S-a ajuns aici"<<std::endl;
+                Frame::switchReady();
+                text_input_frame = new Text_Frame(1000,300,window,"Save");
+        }
+    } else {
+        buttonShape.setFillColor(sf::Color(105, 1, 1));
+    }
+}
+
+SaveImageButton::~SaveImageButton() {
+    delete text_input_frame;//Daca dezalocam un nullptr nu se intampla nimic
+}
+
+
+
+
+
+BlurFilterButton::BlurFilterButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
+{
+    filter = new BlurFilter();
+}
+void BlurFilterButton::update(sf::RenderWindow& window, const sf::Event& event)
+{
+    if (isMouseOver(window)) {
+        buttonShape.setFillColor(sf::Color(200, 0, 0));
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
+            //filter->applyFilter();
+            Frame::switchReady();
+            text_input_frame = new Text_Frame(1000,300,window,"Blur");
+        }
+    } else {
+        buttonShape.setFillColor(sf::Color(105, 1, 1));
+    }
+};
+
+
+CropFilterButton::CropFilterButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
+{
+    filter = new CropFilter();
+}
+void CropFilterButton::update(sf::RenderWindow& window, const sf::Event& event)
+{
+    if (isMouseOver(window)) {
+        buttonShape.setFillColor(sf::Color(200, 0, 0));
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
+            //filter->applyFilter();
+            Frame::switchReady();
+            text_input_frame = new Text_Frame(1000,300,window,"Crop");
+        }
+    } else {
+        buttonShape.setFillColor(sf::Color(105, 1, 1));
+    }
+};
+
+
+ContrastFilterButton::ContrastFilterButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
+{
+    filter = new ContrastFilter();
+}
+void ContrastFilterButton::update(sf::RenderWindow& window, const sf::Event& event)
+{
+    if (isMouseOver(window)) {
+        buttonShape.setFillColor(sf::Color(200, 0, 0));
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
+            //filter->applyFilter();
+            Frame::switchReady();
+            text_input_frame = new Text_Frame(1000,300,window,"Contrast");
+        }
+    } else {
+        buttonShape.setFillColor(sf::Color(105, 1, 1));
+    }
+};
+
+
+SaturationFilterButton::SaturationFilterButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
+{
+    filter = new SaturationFilter();
+}
+void SaturationFilterButton::update(sf::RenderWindow& window, const sf::Event& event)
+{
+    if (isMouseOver(window)) {
+        buttonShape.setFillColor(sf::Color(200, 0, 0));
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
+            //filter->applyFilter();
+            Frame::switchReady();
+            text_input_frame = new Text_Frame(1000,300,window,"Saturation");
+        }
+    } else {
+        buttonShape.setFillColor(sf::Color(105, 1, 1));
+    }
+};
+
+
+
+
+SelectSaturationButton::SelectSaturationButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
+{
+    filter = new SaturationFilter();
+}
+void SelectSaturationButton::update(sf::RenderWindow& window, const sf::Event& event)
+{
+    if (isMouseOver(window)) {
+        buttonShape.setFillColor(sf::Color(200, 0, 0));
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
+            dynamic_cast<SaturationFilter*>(filter)->setSaturation(value);
+            filter->applyFilter();
+            Frame::switchReady();
+        }
+    } else {
+        buttonShape.setFillColor(sf::Color(105, 1, 1));
+    }
+};
+
+
+
+
+
+
+SelectContrastButton::SelectContrastButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
+{
+    filter = new ContrastFilter();
+}
+void SelectContrastButton::update(sf::RenderWindow& window, const sf::Event& event)
+{
+    if (isMouseOver(window)) {
+        buttonShape.setFillColor(sf::Color(200, 0, 0));
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
+            dynamic_cast<ContrastFilter*>(filter)->setContrast(value);
+            filter->applyFilter();
+            Frame::switchReady();
+        }
+    } else {
+        buttonShape.setFillColor(sf::Color(105, 1, 1));
+    }
+};
+
+
+
+SelectBlurButton::SelectBlurButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
+{
+    filter = new BlurFilter();
+}
+void SelectBlurButton::update(sf::RenderWindow& window, const sf::Event& event)
+{
+    if (isMouseOver(window)) {
+        buttonShape.setFillColor(sf::Color(200, 0, 0));
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
+            std::cout<<"Crapa1"<<std::endl;
+            dynamic_cast<BlurFilter*>(filter)->setBlur(value);
+            std::cout<<"Crapa2"<<std::endl;
+            filter->applyFilter();
+            Frame::switchReady();
+        }
+    } else {
+        buttonShape.setFillColor(sf::Color(105, 1, 1));
+    }
+};
+
+
+
+
+SelectCropButton::SelectCropButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
+{
+    filter = new CropFilter();
+}
+void SelectCropButton::update(sf::RenderWindow& window, const sf::Event& event)
+{
+    if (isMouseOver(window)) {
+        buttonShape.setFillColor(sf::Color(200, 0, 0));
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
+            std::cout<<"Crapa1"<<std::endl;
+            dynamic_cast<CropFilter*>(filter)->setCrop(a,b,c,d);
+            std::cout<<"Crapa2"<<std::endl;
+            filter->applyFilter();
+            Frame::switchReady();
+        }
+    } else {
+        buttonShape.setFillColor(sf::Color(105, 1, 1));
+    }
+};
 

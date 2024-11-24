@@ -13,9 +13,9 @@
 class Image {
 private:
     std::string image_path;
-    void save_to_memory();
+    void save_to_memory() const;
 public:
-    explicit Image(const std::string & = "Image Editor");
+    explicit Image(std::string  = "Image Editor");
     ~Image() = default;
     Image(const Image& a);
     Image& operator=(const Image &a) {
@@ -25,8 +25,7 @@ public:
         }
         return *this;
     }
-    friend std::ostream& operator<<(std::ostream& os, Image& image);
-
+    friend std::ostream& operator<<(std::ostream& os, const Image& image);
     static void display_image(sf::RenderWindow& window);
 
 };
