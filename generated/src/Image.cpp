@@ -1,49 +1,55 @@
-//
 // Created by stef on 10/22/24.
-//
 
 #include <utility>
-
 #include "../include/Image.h"
-
 #include "../include/Frame.h"
 
-Image::Image(std::string ImagePath) : image_path(std::move(ImagePath)) {
-    save_to_memory();
+// Constructor: Initializes the Image object with the given image path
+Image::Image(std::string imagePath) : imagePath(std::move(imagePath)) {
+    saveToMemory();
 };
 
+// Copy constructor: Copies the image path and saves the image to memory
 Image::Image(const Image &a) {
-    this->image_path = a.image_path;
-    this->save_to_memory();
+    this->imagePath = a.imagePath;
+    this->saveToMemory();
 }
 
-void Image::save_to_memory() const
-{
-    const cv::Mat image = cv::imread(image_path, cv::IMREAD_COLOR);
-    if(image.empty()) {
+// Save the image to memory by resizing it and saving scaled versions to disk
+void Image::saveToMemory() const {
+    // Load the image from the given file path
+    const cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
+    if (image.empty()) {
         std::cerr << "Could not open or find the image" << std::endl;
+        return;
     }
 
-    const int image_width = image.cols;
-    const int image_height = image.rows;
-    const float aspect_orig = static_cast<float>(image_width) / static_cast<float>(image_height);
-    const float aspect_screen = static_cast<float>(Frame::getWidth()) / static_cast<float>(Frame::getHeight());
+    // Get image dimensions and calculate the aspect ratio
+    const int imageWidth = image.cols;
+    const int imageHeight = image.rows;
+    const float aspectOrig = static_cast<float>(imageWidth) / static_cast<float>(imageHeight);
+    const float aspectScreen = static_cast<float>(Frame::getWidth()) / static_cast<float>(Frame::getHeight());
 
-    int scaled_width, scaled_height;
+    int scaledWidth, scaledHeight;
 
-    if (aspect_orig > aspect_screen) {
-        scaled_width = Frame::getWidth();
-        scaled_height = static_cast<int>(static_cast<float>(scaled_width) / aspect_orig);
+    // Scale the image while maintaining its aspect ratio
+    if (aspectOrig > aspectScreen) {
+        scaledWidth = Frame::getWidth();
+        scaledHeight = static_cast<int>(static_cast<float>(scaledWidth) / aspectOrig);
     } else {
-        scaled_height = Frame::getHeight();
-        scaled_width = static_cast<int>(static_cast<float>(scaled_height) * aspect_orig);
+        scaledHeight = Frame::getHeight();
+        scaledWidth = static_cast<int>(static_cast<float>(scaledHeight) * aspectOrig);
     }
-    scaled_width *= 0.6;
-    scaled_height *= 0.6;
 
+    // Reduce the scaled dimensions to 60% of the original calculation
+    scaledWidth *= 0.6;
+    scaledHeight *= 0.6;
+
+    // Resize the image
     cv::Mat resized;
-    resize(image, resized, cv::Size(scaled_width, scaled_height), cv::INTER_LINEAR);
+    cv::resize(image, resized, cv::Size(scaledWidth, scaledHeight), cv::INTER_LINEAR);
 
+    // Save the resized image to a temporary file
     std::string outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg";
     if (cv::imwrite(outputPath, resized)) {
         std::cout << "Image saved successfully to " << outputPath << std::endl;
@@ -51,34 +57,40 @@ void Image::save_to_memory() const
         std::cerr << "Failed to save the image!" << std::endl;
     }
 
+    // Save the original image to another file
     std::string outputPath2 = "/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg";
     if (cv::imwrite(outputPath2, image)) {
         std::cout << "Image saved successfully to " << outputPath2 << std::endl;
     } else {
         std::cerr << "Failed to save the image!" << std::endl;
     }
-
 }
 
-
-void Image::display_image(sf::RenderWindow& window) {
+// Display the resized image in the SFML window
+void Image::displayImage(sf::RenderWindow& window) {
     sf::Texture texture;
-    if (!texture.loadFromFile("/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg")) {
-        std::cerr << "Error loading image!" << std::endl;
+
+    // Load the resized image from file
+    try
+    {
+        if (!texture.loadFromFile("/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg"))
+            throw std::runtime_error("Could not load image!");
+    }catch (const ImageException& e)
+    {
+        std::cerr << e.what() << std::endl;
         return;
     }
+
+    // Create a sprite from the texture and center it horizontally
     sf::Sprite sprite(texture);
-    sprite.setPosition(static_cast<float>(Frame::getWidth())/2 - sprite.getGlobalBounds().width/2, 25);
+    sprite.setPosition(static_cast<float>(Frame::getWidth()) / 2 - sprite.getGlobalBounds().width / 2, 25);
+
+    // Draw the sprite in the window
     window.draw(sprite);
 }
 
+// Overload the << operator to print the image's path
 std::ostream& operator<<(std::ostream& os, const Image& image) {
-    os << "Image: " << image.image_path << std::endl;
+    os << "Image: " << image.imagePath << std::endl;
     return os;
 }
-
-
-
-
-
-

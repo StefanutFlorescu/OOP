@@ -7,13 +7,16 @@
 #include <exception>
 #include <string>
 #include <iostream>
-
+/**
+ * @class Exceptions
+ * Here we have the derived exceptions for this aplication
+ */
 class ApplicationException : public std::exception {
 protected:
     std::string message;
 public:
     explicit ApplicationException(const std::string& msg) : message(msg) {}
-    virtual const char* what() const noexcept override {
+    [[nodiscard]] virtual const char* what() const noexcept override {
         return message.c_str();
     }
 };
@@ -30,17 +33,24 @@ public:
     explicit FilterException(const std::string& msg) : ApplicationException(msg) {}
 };
 
-class FrameException : public ApplicationException
+class FrameException final : public ApplicationException
 {
 public:
     explicit FrameException(const std::string& msg) : ApplicationException(msg) {}
 };
 
-class TextFrameException : public ApplicationException
+class TextFrameException final : public ApplicationException
 {
 public:
     explicit TextFrameException(const std::string& msg) : ApplicationException(msg) {}
 };
+
+class ButtonException final : public ApplicationException
+{
+public:
+    explicit ButtonException(const std::string& msg) : ApplicationException(msg) {}
+};
+
 
 
 #endif //EXCEPTION_H

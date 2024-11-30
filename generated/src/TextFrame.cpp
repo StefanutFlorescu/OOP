@@ -2,7 +2,7 @@
 // Created by stef on 10/29/24.
 //
 
-#include "../include/Text_Frame.h"
+#include "../include/TextFrame.h"
 
 // Converts a string to an integer, returning true if successful, or false if an error occurs
 bool convertStringToInt(const std::string& inputString, int& result) {
@@ -39,7 +39,7 @@ std::vector<int> extractNumbersFromString(const std::string& inputString) {
 }
 
 // Constructor: Initializes the Text_Frame with specified dimensions, button type, and main window
-Text_Frame::Text_Frame(int width, int height, sf::RenderWindow& window_main, const std::string& buttonType)
+TextFrame::TextFrame(int width, int height, sf::RenderWindow& window_main, const std::string& buttonType)
     : width(width), height(height) {
 
     // Initialize the appropriate button based on the button type
@@ -117,32 +117,32 @@ Text_Frame::Text_Frame(int width, int height, sf::RenderWindow& window_main, con
                 dynamic_cast<OpenImageButton*>(openButton.get())->setImagePath(inputString);
             } else if (dynamic_cast<SaveOutputButton*>(openButton.get()) != nullptr) {
                 dynamic_cast<SaveOutputButton*>(openButton.get())->setOutputPath(inputString);
-            } else if (dynamic_cast<SelectSaturationButton*>(openButton.get()) != nullptr) {
-                int number;
-                if (convertStringToInt(inputString, number)) {
-                    dynamic_cast<SelectSaturationButton*>(openButton.get())->changeValue(number);
-                } else {
-                    std::cerr << "Invalid input" << std::endl;
+            } else try {
+                if (dynamic_cast<SelectSaturationButton*>(openButton.get()) != nullptr) {
+                    int number;
+                    if (convertStringToInt(inputString, number)) {
+                        dynamic_cast<SelectSaturationButton*>(openButton.get())->changeValue(number);
+                    }
+                } else if (dynamic_cast<SelectContrastButton*>(openButton.get()) != nullptr) {
+                    int number;
+                    if (convertStringToInt(inputString, number)) {
+                        dynamic_cast<SelectContrastButton*>(openButton.get())->changeValue(number);
+                    }
+                } else if (dynamic_cast<SelectBlurButton*>(openButton.get()) != nullptr) {
+                    int number;
+                    if (convertStringToInt(inputString, number)) {
+                        dynamic_cast<SelectBlurButton*>(openButton.get())->changeValue(number);
+                    }
+                } else if (dynamic_cast<SelectCropButton*>(openButton.get()) != nullptr) {
+                    std::vector<int> numbers = extractNumbersFromString(inputString);
+                    if (!numbers.empty() && numbers.size() == 4) {
+                        dynamic_cast<SelectCropButton*>(openButton.get())->changeValue(numbers[0], numbers[1], numbers[2], numbers[3]);
+                    } else {
+                        throw TextFrameException("Invalid crop values: " + inputString);
+                    }
                 }
-            } else if (dynamic_cast<SelectContrastButton*>(openButton.get()) != nullptr) {
-                int number;
-                if (convertStringToInt(inputString, number)) {
-                    dynamic_cast<SelectContrastButton*>(openButton.get())->changeValue(number);
-                } else {
-                    std::cerr << "Invalid input" << std::endl;
-                }
-            } else if (dynamic_cast<SelectBlurButton*>(openButton.get()) != nullptr) {
-                int number;
-                if (convertStringToInt(inputString, number)) {
-                    dynamic_cast<SelectBlurButton*>(openButton.get())->changeValue(number);
-                } else {
-                    std::cerr << "Invalid input" << std::endl;
-                }
-            } else if (dynamic_cast<SelectCropButton*>(openButton.get()) != nullptr) {
-                std::vector<int> numbers = extractNumbersFromString(inputString);
-                if (!numbers.empty()) {
-                    dynamic_cast<SelectCropButton*>(openButton.get())->changeValue(numbers[0], numbers[1], numbers[2], numbers[3]);
-                }
+            } catch (const TextFrameException& e) {
+                std::cerr << "Error: " << e.what() << std::endl;
             }
         }
 
@@ -162,7 +162,7 @@ Text_Frame::Text_Frame(int width, int height, sf::RenderWindow& window_main, con
 }
 
 // Overloaded output operator for Text_Frame
-std::ostream& operator<<(std::ostream& os, const Text_Frame& t) {
-    os << "Text_Frame has been rendered with width: " << t.width << " and height: " << t.height;
+std::ostream& operator<<(std::ostream& os, const TextFrame& tf) {
+    os << "TextFrame has been rendered with width: " << tf.width << " and height: " << tf.height;
     return os;
 }

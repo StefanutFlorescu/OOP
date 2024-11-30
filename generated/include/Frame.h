@@ -5,10 +5,9 @@
 #include <SFML/Graphics.hpp>
 #include <memory> // For std::unique_ptr
 #include <array>  // For std::array
-#include "Text_Frame.h"
+#include "TextFrame.h"
 #include "Image.h"
 #include "Button.h"
-
 // Forward declarations of classes used within Frame
 class Button;
 class OpenInputButton;
@@ -50,10 +49,10 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Frame& frame);
 
     // Static utility functions
-    static int getWidth();       // Retrieves the application width
-    static int getHeight();      // Retrieves the application height
+    [[nodiscard]] static int getWidth();       // Retrieves the application width
+    [[nodiscard]] static int getHeight();      // Retrieves the application height
     static bool switchReady();   // Toggles the READY state
-    static bool getReady();      // Retrieves the READY state
+    [[nodiscard]] static bool getReady();      // Retrieves the READY state
 };
 
 #endif // FRAME_H

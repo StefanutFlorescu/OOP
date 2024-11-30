@@ -21,21 +21,27 @@
 
 #include "Button.h"
 
+/**
+ * @class TextFrame
+ * Every input will go through this TextFrame
+ */
+
 class OpenImageButton;
 
-class Text_Frame {
+class TextFrame
+{
     std::unique_ptr<Button> openButton;
     int width, height;
+
 public:
-    Text_Frame(int width, int height, sf::RenderWindow& window_main, const std::string& buttonType);
-    Text_Frame(const Text_Frame &other) = delete;
-    ~Text_Frame() = default;
-    friend std::ostream& operator<<(std::ostream& os, const Text_Frame& tf);
+    TextFrame(int width, int height, sf::RenderWindow& window_main, const std::string& buttonType);
+    TextFrame(const TextFrame& other) = delete;
+    ~TextFrame() = default;
+    friend std::ostream& operator<<(std::ostream& os, const TextFrame& tf);
 
     void handleTextInput(const sf::Event& event, std::string& inputString);
     void handleButtonUpdate(const std::string& inputString, std::unique_ptr<Button>& openButton);
 };
-
 
 
 #endif //TEXT_FRAME_H

@@ -19,7 +19,9 @@ Frame::Frame(const std::string& title) {
             handleEvents(window); // Process user input and events
             render(window);       // Render all elements to the screen
         }
-    } catch (const std::exception& e) {
+    } catch (const ButtonException& e) {
+        std::cerr << "Error initializing Frame: " << e.what() << std::endl;
+    } catch (const FrameException& e) {
         std::cerr << "Error initializing Frame: " << e.what() << std::endl;
     } catch (...) {
         std::cerr << "An unknown error occurred while initializing Frame." << std::endl;
@@ -77,7 +79,7 @@ void Frame::initializeButtons() {
                 "Crop"
             )
         };
-    } catch (const std::exception& e) {
+    } catch (const ButtonException& e) {
         std::cerr << "Error initializing buttons: " << e.what() << std::endl;
         throw; // Rethrow to propagate the error to the Frame constructor
     }
@@ -100,9 +102,13 @@ void Frame::handleEvents(sf::RenderWindow& window) const {
                 button->update(window, event);
             }
         }
-    } catch (const std::exception& e) {
+    } catch (const FrameException& e) {
         std::cerr << "Error handling events: " << e.what() << std::endl;
+    } catch (const ButtonException& e)
+    {
+        std::cerr << "Error handling the buttons: " << e.what() << std::endl;
     }
+
 }
 
 // Private helper function: Renders all elements to the window
@@ -122,13 +128,16 @@ void Frame::render(sf::RenderWindow& window) const {
 
         // Display the image if the frame is ready
         if (Frame::getReady()) {
-            Image::display_image(window);
+            Image::displayImage(window);
         }
 
         // Display the rendered content on the screen
         window.display();
-    } catch (const std::exception& e) {
+    } catch (const FrameException& e) {
         std::cerr << "Error rendering window: " << e.what() << std::endl;
+    } catch (const ButtonException& e)
+    {
+        std::cerr << "Error rendering the buttons: " << e.what() << std::endl;
     }
 }
 

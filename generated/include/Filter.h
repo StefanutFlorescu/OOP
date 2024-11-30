@@ -4,6 +4,8 @@
 
 #ifndef FILTER_H
 #define FILTER_H
+
+// Include necessary headers
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <memory>
@@ -11,62 +13,104 @@
 #include "Frame.h"
 #include "Exception.h"
 
+/**
+ * @class Filter
+ * Here we have tall the filters to modify the image
+ */
+
+// Base class for filters
 class Filter {
 protected:
-    cv::Mat image;
-    cv::Mat original_image;
-    std::string path;
+    cv::Mat image;                // Current image after applying filter
+    cv::Mat originalImage;       // Original unaltered image
+    std::string path;             // Path to the image file
+
 public:
+    // Constructor with default image path
     explicit Filter(const std::string& path = "/home/stef/CLionProjects/PhotoEditorPhoto/resources/temp.jpg");
+
+    // Copy constructor
     Filter(const Filter& filter);
+
+    // Assignment operator
     Filter& operator=(const Filter& filter);
+
+    // Virtual destructor for proper cleanup
     virtual ~Filter();
+
+    // Overload << operator for printing filter information
     friend std::ostream& operator<<(std::ostream &os, const Filter &filter);
+
+    // Pure virtual function to apply a specific filter (to be overridden by derived classes)
     virtual void applyFilter() = 0;
 };
 
+// BlurFilter class: Applies a blur effect
+class BlurFilter final : public Filter {
+    int blur{}; // Blur intensity
 
-class BlurFilter final : public Filter
-{
-    int blur{};
-    public:
+public:
+    // Constructor with default image path
     explicit BlurFilter(const std::string& path = "/home/stef/CLionProjects/PhotoEditorPhoto/resources/temp.jpg");
+
+    // Override applyFilter to implement blur effect
     void applyFilter() override;
-    void setBlur(const double blur){this->blur = static_cast<int>(blur);};
+
+    // Setter for blur intensity
+    void setBlur(const double blur) { this->blur = static_cast<int>(blur); };
 };
 
+// CropFilter class: Crops the image to a specific rectangle
+class CropFilter final : public Filter {
+    int a = 0, b = 0, c = 0, d = 0; // Crop rectangle parameters (x, y, width, height)
 
-class CropFilter final : public Filter
-{
-    int a=0,b=0,c=0,d=0;
 public:
+    // Constructor with default image path
     explicit CropFilter(const std::string& path = "/home/stef/CLionProjects/PhotoEditorPhoto/resources/temp.jpg");
+
+    // Override applyFilter to implement cropping
     void applyFilter() override;
-    void setCrop(int a, int b, int c, int d){this->a =a;this->b =b;this->c =c;this->d =d;};
+
+    // Setter for crop parameters
+    void setCrop(const int a, const int b, const int c, const int d) {
+        this->a = a; this->b = b; this->c = c; this->d = d;
+    };
 };
 
-class ContrastFilter final : public Filter
-{
-    double contrast = 1;
+// ContrastFilter class: Adjusts the image contrast
+class ContrastFilter final : public Filter {
+    double contrast = 1; // Contrast factor
+
 public:
+    // Constructor with default image path
     explicit ContrastFilter(const std::string& path = "/home/stef/CLionProjects/PhotoEditorPhoto/resources/temp.jpg");
+
+    // Override applyFilter to implement contrast adjustment
     void applyFilter() override;
-    void setContrast(double contrast){this->contrast = contrast;};
+
+    // Setter for contrast value
+    void setContrast(double contrast) { this->contrast = contrast; };
 };
 
-class SaturationFilter final : public Filter
-{
-    double saturation = 1;
+// SaturationFilter class: Adjusts the image saturation
+class SaturationFilter final : public Filter {
+    double saturation = 1; // Saturation factor
+
 public:
+    // Constructor with default image path
     explicit SaturationFilter(const std::string& path = "/home/stef/CLionProjects/PhotoEditorPhoto/resources/temp.jpg");
+
+    // Override applyFilter to implement saturation adjustment
     void applyFilter() override;
-    void setSaturation(double saturation){this->saturation = saturation;};
+
+    // Setter for saturation value
+    void setSaturation(double saturation) { this->saturation = saturation; };
 };
 
-
-
+// FilterFactory: Factory class for creating filters
 class FilterFactory {
 public:
+    // Enum to define filter types
     enum FilterType {
         BLUR,
         CROP,
@@ -74,21 +118,21 @@ public:
         SATURATION
     };
 
+    // Factory method to create filters based on the type
     static std::unique_ptr<Filter> createFilter(FilterType type, const std::string& path = "") {
         switch (type) {
-        case BLUR:
-            return std::make_unique<BlurFilter>(path);
-        case CROP:
-            return std::make_unique<CropFilter>(path);
-        case CONTRAST:
-            return std::make_unique<ContrastFilter>(path);
-        case SATURATION:
-            return std::make_unique<SaturationFilter>(path);
-        default:
-            throw std::invalid_argument("Unknown filter type");
+            case BLUR:
+                return std::make_unique<BlurFilter>(path);
+            case CROP:
+                return std::make_unique<CropFilter>(path);
+            case CONTRAST:
+                return std::make_unique<ContrastFilter>(path);
+            case SATURATION:
+                return std::make_unique<SaturationFilter>(path);
+            default:
+                throw std::invalid_argument("Unknown filter type");
         }
     }
 };
 
-
-#endif //FILTER_H
+#endif // FILTER_H

@@ -5,37 +5,42 @@
 #include "../include/Button.h"
 #include "../include/Frame.h"
 
-
+// Initializing the buttons
 Button::Button(const float x, const float y, const float width, const float height, const std::string& text)
 {
-    buttonShape.setPosition(x, y);
-    buttonShape.setSize(sf::Vector2f(width, height));
-    buttonShape.setFillColor(sf::Color(255, 215, 1));
+    buttonShape.setPosition(x, y); // Setting the position on the screen
+    buttonShape.setSize(sf::Vector2f(width, height)); // Setting the size for the button
+    buttonShape.setFillColor(sf::Color(255, 215, 1)); // Setting the base color of the button
 
-    if(!font.loadFromFile("/System/Library/fonts/NewYork.ttf")) {
-        std::cerr<<"Error in loading font!"<<std::endl;
-        exit(1);
+    if (!font.loadFromFile("/System/Library/fonts/NewYork.ttf")) // Searching the font for the text
+    {
+        throw ButtonException("could not load font"); // This exception will be caught by the Frame
     }
-    buttonText.setFont(font);
-    buttonText.setString(text);
-    buttonText.setCharacterSize(24);
-    buttonText.setFillColor(sf::Color::White);
-    sf::FloatRect textRect = buttonText.getLocalBounds();
-    buttonText.setOrigin(textRect.width / 2, textRect.height / 2);
-    buttonText.setPosition(
-        x + width/2,
-        y + height/2 - 5
+    buttonText.setFont(font); // Setting the font
+    buttonText.setString(text); // Setting the text of the button
+    buttonText.setCharacterSize(24); // Setting the font size
+    buttonText.setFillColor(sf::Color::White); // Setting the text color
+    const sf::FloatRect textRect = buttonText.getLocalBounds(); // Centralizing the text for the button
+    buttonText.setOrigin(textRect.width / 2, textRect.height / 2); // setting the position for the text
+    buttonText.setPosition( // setting the position for the text
+        x + width / 2,
+        y + height / 2 - 5
     );
 }
 
-Button::Button(const Button &b) {
+// Copy constructor
+Button::Button(const Button& b)
+{
     this->buttonShape = b.buttonShape;
     this->buttonText = b.buttonText;
     this->font = b.font;
 }
 
-Button& Button::operator=(const Button& other) {
-    if (this != &other) {
+// Overloading the =operator
+Button& Button::operator=(const Button& other)
+{
+    if (this != &other)
+    {
         buttonShape = other.buttonShape;
         buttonText = other.buttonText;
         font = other.font;
@@ -43,316 +48,440 @@ Button& Button::operator=(const Button& other) {
     return *this;
 }
 
-std::ostream &operator<<(std::ostream &os, const Button &button) {
-    // Am avut nevoie de conversia de la final pentru tipurile de string
-    os << button.buttonText.getString().toAnsiString()<< " a fost plasat!";
+// Overloading the <<operator
+std::ostream& operator<<(std::ostream& os, const Button& button)
+{
+    os << button.buttonText.getString().toAnsiString() << " was placed!";
     return os;
 }
 
-void Button::draw(sf::RenderWindow& window) const {
+// Drawing the button on the screen
+void Button::draw(sf::RenderWindow& window) const
+{
     window.draw(buttonShape);
     window.draw(buttonText);
 }
 
-bool Button::isMouseOver(const sf::RenderWindow& window) const {
-    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+// Verifying if the mouse is over the button
+bool Button::isMouseOver(const sf::RenderWindow& window) const
+{
+    const sf::Vector2i mousePos = sf::Mouse::getPosition(window);
     return buttonShape.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
 }
 
-
-void Button::update(sf::RenderWindow& window, const sf::Event& event) {
-    if (isMouseOver(window)) {
+// Updating the button
+void Button::update(sf::RenderWindow& window, const sf::Event& event)
+{
+    if (isMouseOver(window))
+    {
         buttonShape.setFillColor(sf::Color::Yellow);
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        {
             std::cout << "Button clicked!" << std::endl;
         }
-    } else {
+    }
+    else
+    {
         buttonShape.setFillColor(sf::Color::Blue);
     }
 }
 
-void Button::change_text(const std::string &text) {
+// Changing the button text
+void Button::change_text(const std::string& text)
+{
     buttonText.setString(text);
 }
 
+// The button that gets an image on the screen
+OpenImageButton::OpenImageButton(const float x, const float y, const float width, const float height,
+                                 const std::string& text)
+    : Button(x, y, width, height, text)
+{
+}
 
-
-OpenImageButton::OpenImageButton(const float x, const float y, const float width, const float height, const std::string &text)
-    : Button(x, y, width, height, text){}
-
-
-void OpenImageButton::update(sf::RenderWindow& window, const sf::Event& event) {
-    if (isMouseOver(window)) {
-        buttonShape.setFillColor(sf::Color(200, 0, 0));
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-            if (!std::filesystem::exists(imagePath)) {
-                std::cout<<"File Path :"<<imagePath<<std::endl;
+// Updating the button, that if the imagePath is correct the image should be rendered on the screen
+void OpenImageButton::update(sf::RenderWindow& window, const sf::Event& event)
+{
+    if (isMouseOver(window))
+    {
+        buttonShape.setFillColor(sf::Color(200, 0, 0)); //also if the mouse over the button the color should change
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        {
+            if (!std::filesystem::exists(imagePath))
+            {
                 std::cerr << "Error: Image file does not exist at path: " << imagePath << std::endl;
             }
             else
             {
                 image = new Image(imagePath);
-                Frame::switchReady();
+                Frame::switchReady(); // This will make the app render the image
             }
         }
-    } else {
-        buttonShape.setFillColor(sf::Color(105, 1, 1));
+    }
+    else
+    {
+        buttonShape.setFillColor(sf::Color(105, 1, 1)); // when the mouse is not on the button the color is back to normal
     }
 }
-OpenImageButton::~OpenImageButton() {
-        delete image;//Daca dezalocam un nullptr nu se intampla nimic
+
+OpenImageButton::~OpenImageButton()
+{
+    delete image; // Freeing the space for the image
 }
 
-
-
-OpenInputButton::OpenInputButton(const float x, const float y, const float width, const float height, const std::string &text)
-    : Button(x, y, width, height, text), text_input_frame(nullptr) {
+// Constructor for OpenInputButton
+OpenInputButton::OpenInputButton(const float x, const float y, const float width, const float height,
+                                 const std::string& text)
+    : Button(x, y, width, height, text), textInputFrame(nullptr)
+{
 }
 
-void OpenInputButton::update(sf::RenderWindow& window, const sf::Event& event) {
-    if(Frame::getReady())
+// Update function for OpenInputButton
+void OpenInputButton::update(sf::RenderWindow& window, const sf::Event& event)
+{
+    // Change button text based on Frame readiness
+    if (Frame::getReady())
         this->change_text("Remove Image");
     else
         this->change_text("Search Image");
-    if (isMouseOver(window)) {
+
+    // Check if mouse is over the button
+    if (isMouseOver(window))
+    {
+        // Change button color to indicate hover state
         buttonShape.setFillColor(sf::Color(200, 0, 0));
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
-            if(!Frame::getReady()) {
-                text_input_frame = new Text_Frame(1000,300,window,"Open");
-            } else {
+
+        // Check for mouse button press event
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        {
+            // Create a new Text_Frame if Frame is not ready
+            if (!Frame::getReady())
+            {
+                textInputFrame = new TextFrame(1000, 300, window, "Open");
+            }
+            else
+            {
+                // Toggle Frame readiness
                 Frame::switchReady();
             }
         }
-    } else {
+    }
+    else
+    {
+        // Default button color when not hovered
         buttonShape.setFillColor(sf::Color(105, 1, 1));
     }
 }
 
-OpenInputButton::~OpenInputButton() {
-    delete text_input_frame;//Daca dezalocam un nullptr nu se intampla nimic
+// Destructor for OpenInputButton
+OpenInputButton::~OpenInputButton()
+{
+    // Safely delete the text_input_frame pointer
+    delete textInputFrame; // Deallocating a nullptr is safe and has no effect
 }
 
+// Constructor for SaveOutputButton
+SaveOutputButton::SaveOutputButton(const float x, const float y, const float width, const float height,
+                                   const std::string& text)
+    : Button(x, y, width, height, text)
+{
+}
 
-SaveOutputButton::SaveOutputButton(const float x, const float y, const float width, const float height, const std::string &text)
-    : Button(x, y, width, height, text){}
-
+// Setter for output path in SaveOutputButton
 void SaveOutputButton::setOutputPath(const std::string& inputString)
 {
-    output_path = inputString;
+    outputPath = inputString;
 }
 
-void SaveOutputButton::update(sf::RenderWindow& window, const sf::Event& event) {
-    if (isMouseOver(window)) {
+// Update function for SaveOutputButton
+void SaveOutputButton::update(sf::RenderWindow& window, const sf::Event& event)
+{
+    // Check if mouse is over the button
+    if (isMouseOver(window))
+    {
+        // Change button color to indicate hover state
         buttonShape.setFillColor(sf::Color(200, 0, 0));
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-            if (!std::filesystem::exists("/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg")) {
-                std::cerr << "Error: Image file does not exist at path: " <<"/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg" << std::endl;
+
+        // Check for mouse button press event
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        {
+            // Verify if the image file exists at the specified path
+            if (!std::filesystem::exists("/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg"))
+            {
+                std::cerr << "Error: Image file does not exist at path: "
+                          << "/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg" << std::endl;
             }
             else
             {
-                cv::Mat image = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg", cv::IMREAD_COLOR);
-                if (cv::imwrite(output_path, image)) {
-                    std::cout << "Image saved successfully to " << output_path << std::endl;
+                // Read the image file
+                const cv::Mat image = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg",
+                                                 cv::IMREAD_COLOR);
+
+                // Attempt to save the image
+                if (cv::imwrite(outputPath, image))
+                {
+                    std::cout << "Image saved successfully to " << outputPath << std::endl;
                     Frame::switchReady();
-                } else {
+                }
+                else
+                {
                     std::cerr << "Failed to save the image!" << std::endl;
                 }
             }
         }
-    } else {
+    }
+    else
+    {
+        // Default button color when not hovered
         buttonShape.setFillColor(sf::Color(105, 1, 1));
     }
 }
 
+// Destructor for SaveOutputButton
 SaveOutputButton::~SaveOutputButton() = default;
 
-
-SaveImageButton::SaveImageButton(const float x, const float y, const float width, const float height, const std::string &text)
-    : Button(x, y, width, height, text), text_input_frame(nullptr) {
+// Constructor for SaveImageButton
+SaveImageButton::SaveImageButton(const float x, const float y, const float width, const float height,
+                                 const std::string& text)
+    : Button(x, y, width, height, text), textInputFrame(nullptr)
+{
 }
 
-void SaveImageButton::update(sf::RenderWindow& window, const sf::Event& event) {
-    if (isMouseOver(window)) {
+// Update function for SaveImageButton
+void SaveImageButton::update(sf::RenderWindow& window, const sf::Event& event)
+{
+    // Check if mouse is over the button
+    if (isMouseOver(window))
+    {
+        // Change button color to indicate hover state
         buttonShape.setFillColor(sf::Color(200, 0, 0));
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
-                std::cout<<"S-a ajuns aici"<<std::endl;
-                Frame::switchReady();
-                text_input_frame = new Text_Frame(1000,300,window,"Save");
+
+        // Check for mouse button press event
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        {
+            Frame::switchReady(); // Toggle Frame readiness
+            textInputFrame = new TextFrame(1000, 300, window, "Save");
         }
-    } else {
+    }
+    else
+    {
+        // Default button color when not hovered
         buttonShape.setFillColor(sf::Color(105, 1, 1));
     }
 }
 
-SaveImageButton::~SaveImageButton() {
-    delete text_input_frame;//Daca dezalocam un nullptr nu se intampla nimic
-}
-
-
-
-
-
-BlurFilterButton::BlurFilterButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
+// Destructor for SaveImageButton
+SaveImageButton::~SaveImageButton()
 {
-    filter = new BlurFilter();
+    // Safely delete the text_input_frame pointer
+    delete textInputFrame; // Deallocating a nullptr is safe and has no effect
 }
+
+// Constructor for BlurFilterButton
+BlurFilterButton::BlurFilterButton(const float x, const float y, const float width, const float height, const std::string& text)
+    : FilterButton(x, y, width, height, text)
+{
+    filter = new BlurFilter(); // Initialize with BlurFilter
+}
+
+// Update function for BlurFilterButton
 void BlurFilterButton::update(sf::RenderWindow& window, const sf::Event& event)
 {
-    if (isMouseOver(window)) {
+    if (isMouseOver(window))
+    {
+        // Highlight button when hovered
         buttonShape.setFillColor(sf::Color(200, 0, 0));
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
-            //filter->applyFilter();
-            Frame::switchReady();
-            text_input_frame = new Text_Frame(1000,300,window,"Blur");
+
+        // Check for mouse click event
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        {
+            Frame::switchReady(); // Toggle readiness of the frame
+            textInputFrame = new TextFrame(1000, 300, window, "Blur");
         }
-    } else {
+    }
+    else
+    {
+        // Default button color
         buttonShape.setFillColor(sf::Color(105, 1, 1));
     }
-};
-
-
-CropFilterButton::CropFilterButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
-{
-    filter = new CropFilter();
 }
+
+// Constructor for CropFilterButton
+CropFilterButton::CropFilterButton(const float x, const float y, const float width, const float height, const std::string& text)
+    : FilterButton(x, y, width, height, text)
+{
+    filter = new CropFilter(); // Initialize with CropFilter
+}
+
+// Update function for CropFilterButton
 void CropFilterButton::update(sf::RenderWindow& window, const sf::Event& event)
 {
-    if (isMouseOver(window)) {
+    if (isMouseOver(window))
+    {
         buttonShape.setFillColor(sf::Color(200, 0, 0));
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
-            //filter->applyFilter();
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        {
             Frame::switchReady();
-            text_input_frame = new Text_Frame(1000,300,window,"Crop");
+            textInputFrame = new TextFrame(1000, 300, window, "Crop");
         }
-    } else {
+    }
+    else
+    {
         buttonShape.setFillColor(sf::Color(105, 1, 1));
     }
-};
-
-
-ContrastFilterButton::ContrastFilterButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
-{
-    filter = new ContrastFilter();
 }
+
+// Constructor for ContrastFilterButton
+ContrastFilterButton::ContrastFilterButton(const float x, const float y, const float width, const float height, const std::string& text)
+    : FilterButton(x, y, width, height, text)
+{
+    filter = new ContrastFilter(); // Initialize with ContrastFilter
+}
+
+// Update function for ContrastFilterButton
 void ContrastFilterButton::update(sf::RenderWindow& window, const sf::Event& event)
 {
-    if (isMouseOver(window)) {
+    if (isMouseOver(window))
+    {
         buttonShape.setFillColor(sf::Color(200, 0, 0));
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
-            //filter->applyFilter();
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        {
             Frame::switchReady();
-            text_input_frame = new Text_Frame(1000,300,window,"Contrast");
+            textInputFrame = new TextFrame(1000, 300, window, "Contrast");
         }
-    } else {
+    }
+    else
+    {
         buttonShape.setFillColor(sf::Color(105, 1, 1));
     }
-};
-
-
-SaturationFilterButton::SaturationFilterButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
-{
-    filter = new SaturationFilter();
 }
+
+// Constructor for SaturationFilterButton
+SaturationFilterButton::SaturationFilterButton(const float x, const float y, const float width, const float height, const std::string& text)
+    : FilterButton(x, y, width, height, text)
+{
+    filter = new SaturationFilter(); // Initialize with SaturationFilter
+}
+
+// Update function for SaturationFilterButton
 void SaturationFilterButton::update(sf::RenderWindow& window, const sf::Event& event)
 {
-    if (isMouseOver(window)) {
+    if (isMouseOver(window))
+    {
         buttonShape.setFillColor(sf::Color(200, 0, 0));
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
-            //filter->applyFilter();
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        {
             Frame::switchReady();
-            text_input_frame = new Text_Frame(1000,300,window,"Saturation");
+            textInputFrame = new TextFrame(1000, 300, window, "Saturation");
         }
-    } else {
+    }
+    else
+    {
         buttonShape.setFillColor(sf::Color(105, 1, 1));
     }
-};
-
-
-
-
-SelectSaturationButton::SelectSaturationButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
-{
-    filter = new SaturationFilter();
 }
+
+// Constructor for SelectSaturationButton
+SelectSaturationButton::SelectSaturationButton(const float x,const float y,const float width,const float height, const std::string& text)
+    : FilterButton(x, y, width, height, text)
+{
+    filter = new SaturationFilter(); // Initialize with SaturationFilter
+}
+
+// Update function for SelectSaturationButton
 void SelectSaturationButton::update(sf::RenderWindow& window, const sf::Event& event)
 {
-    if (isMouseOver(window)) {
+    if (isMouseOver(window))
+    {
         buttonShape.setFillColor(sf::Color(200, 0, 0));
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
-            dynamic_cast<SaturationFilter*>(filter)->setSaturation(value);
-            filter->applyFilter();
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        {
+            dynamic_cast<SaturationFilter*>(filter)->setSaturation(value); // Set saturation value
+            filter->applyFilter(); // Apply the filter
             Frame::switchReady();
         }
-    } else {
+    }
+    else
+    {
         buttonShape.setFillColor(sf::Color(105, 1, 1));
     }
-};
-
-
-
-
-
-
-SelectContrastButton::SelectContrastButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
-{
-    filter = new ContrastFilter();
 }
+
+// Constructor for SelectContrastButton
+SelectContrastButton::SelectContrastButton(const float x,const float y,const float width,const float height, const std::string& text)
+    : FilterButton(x, y, width, height, text)
+{
+    filter = new ContrastFilter(); // Initialize with ContrastFilter
+}
+
+// Update function for SelectContrastButton
 void SelectContrastButton::update(sf::RenderWindow& window, const sf::Event& event)
 {
-    if (isMouseOver(window)) {
+    if (isMouseOver(window))
+    {
         buttonShape.setFillColor(sf::Color(200, 0, 0));
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
-            dynamic_cast<ContrastFilter*>(filter)->setContrast(value);
-            filter->applyFilter();
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        {
+            dynamic_cast<ContrastFilter*>(filter)->setContrast(value); // Set contrast value
+            filter->applyFilter(); // Apply the filter
             Frame::switchReady();
         }
-    } else {
+    }
+    else
+    {
         buttonShape.setFillColor(sf::Color(105, 1, 1));
     }
-};
-
-
-
-SelectBlurButton::SelectBlurButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
-{
-    filter = new BlurFilter();
 }
+
+// Constructor for SelectBlurButton
+SelectBlurButton::SelectBlurButton(const float x,const float y,const float width,const float height, const std::string& text)
+    : FilterButton(x, y, width, height, text)
+{
+    filter = new BlurFilter(); // Initialize with BlurFilter
+}
+
+// Update function for SelectBlurButton
 void SelectBlurButton::update(sf::RenderWindow& window, const sf::Event& event)
 {
-    if (isMouseOver(window)) {
+    if (isMouseOver(window))
+    {
         buttonShape.setFillColor(sf::Color(200, 0, 0));
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
-            std::cout<<"Crapa1"<<std::endl;
-            dynamic_cast<BlurFilter*>(filter)->setBlur(value);
-            std::cout<<"Crapa2"<<std::endl;
-            filter->applyFilter();
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        {
+            dynamic_cast<BlurFilter*>(filter)->setBlur(value); // Set blur value
+            filter->applyFilter(); // Apply the filter
             Frame::switchReady();
         }
-    } else {
+    }
+    else
+    {
         buttonShape.setFillColor(sf::Color(105, 1, 1));
     }
-};
-
-
-
-
-SelectCropButton::SelectCropButton(float x, float y, float width, float height, const std::string& text) : FilterButton(x, y, width, height, text)
-{
-    filter = new CropFilter();
 }
+
+// Constructor for SelectCropButton
+SelectCropButton::SelectCropButton(const float x,const float y,const float width,const float height, const std::string& text)
+    : FilterButton(x, y, width, height, text)
+{
+    filter = new CropFilter(); // Initialize with CropFilter
+}
+
+// Update function for SelectCropButton
 void SelectCropButton::update(sf::RenderWindow& window, const sf::Event& event)
 {
-    if (isMouseOver(window)) {
+    if (isMouseOver(window))
+    {
         buttonShape.setFillColor(sf::Color(200, 0, 0));
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left ) {
-            std::cout<<"Crapa1"<<std::endl;
-            dynamic_cast<CropFilter*>(filter)->setCrop(a,b,c,d);
-            std::cout<<"Crapa2"<<std::endl;
-            filter->applyFilter();
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        {
+            dynamic_cast<CropFilter*>(filter)->setCrop(a, b, c, d); // Set crop dimensions
+            filter->applyFilter(); // Apply the filter
             Frame::switchReady();
         }
-    } else {
+    }
+    else
+    {
         buttonShape.setFillColor(sf::Color(105, 1, 1));
     }
-};
+}
 

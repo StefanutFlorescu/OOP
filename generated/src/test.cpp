@@ -56,7 +56,7 @@ TEST_CASE("Frame Test"){
 
 TEST_CASE("Text_Frame teset"){
     sf::RenderWindow window(sf::VideoMode(320, 320), "test");
-    Text_Frame text_frame(320,320, window);
+    TextFrame text_frame(320,320, window);
     std::ostringstream output;
     output << text_frame;
     CHECK(output.str() == "Text_Frame has been rendered with width: 320 and height 320");

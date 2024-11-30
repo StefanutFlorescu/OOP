@@ -4,56 +4,61 @@
 
 #include "../include/Filter.h"
 
+// Constructor: Initialize Filter with a given image path
 Filter::Filter(const std::string& path) : path(path) {
-    if(Frame::getReady()) {
+    if (Frame::getReady()) {
         image = cv::imread(path);
         if (image.empty()) {
             std::cerr << "Error: Could not open or find the image!" << std::endl;
-        }else {
+        } else {
             std::cerr << "Please select an image!" << std::endl;
         }
     }
 }
 
+// Copy constructor: Create a deep copy of the filter
 Filter::Filter(const Filter &filter) {
     this->path = filter.path;
-    this->image = filter.image.clone();
-    //filter.image.copyTo(this->image);
+    this->image = filter.image.clone(); // Clone the image
 }
+
+// Assignment operator: Assign one filter to another
 Filter &Filter::operator=(const Filter &filter) {
-    this->image = filter.image.clone();
-    //filter.image.copyTo(this->image);
+    this->image = filter.image.clone(); // Clone the image
     return *this;
 }
 
+// Destructor: Release resources
 Filter::~Filter() {
-    image = cv::Mat();
+    image = cv::Mat(); // Clear the image matrix
 }
 
+// Overload the stream insertion operator to print the filter's path
 std::ostream &operator<<(std::ostream &os, const Filter &filter) {
-    os << std::string(filter.path);
+    os << filter.path;
     return os;
 }
 
+// -------------------------------- BlurFilter --------------------------------
 
-//Blur Filter
-BlurFilter::BlurFilter(const std::string& path) : Filter(path){}
-void BlurFilter::applyFilter()
-{
-    try
-    {
+// Constructor: Initialize BlurFilter with a default or given path
+BlurFilter::BlurFilter(const std::string& path) : Filter(path) {}
+
+// Apply Gaussian blur to the image
+void BlurFilter::applyFilter() {
+    try {
         image = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg");
-        original_image =cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg");
-        if (image.empty())
-        {
+        originalImage = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg");
+
+        if (image.empty()) {
             throw FilterException("Could not find scaled image!");
         }
 
-        if(original_image.empty())
-        {
+        if (originalImage.empty()) {
             throw FilterException("Could not find original image!");
         }
-        // Apply the blur
+
+        // Apply Gaussian blur to the image
         cv::Mat blurred_image;
         cv::GaussianBlur(image, blurred_image, cv::Size(blur, blur), 0);
 
@@ -64,160 +69,159 @@ void BlurFilter::applyFilter()
         } else {
             throw FilterException("Error: Could not save the blurred image!");
         }
-        std::cout << "BlurFilter::applyFilter" << std::endl;
 
-
+        // Apply Gaussian blur to the original image
         cv::Mat blurred_original_image;
-        cv::GaussianBlur(original_image, blurred_original_image, cv::Size(15, 15), 0);
+        cv::GaussianBlur(originalImage, blurred_original_image, cv::Size(15, 15), 0);
 
-        // Save the blurred image
         outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg";
         if (cv::imwrite(outputPath, blurred_original_image)) {
-            std::cout << "Blurred image saved successfully to " << outputPath << std::endl;
+            std::cout << "Blurred original image saved successfully to " << outputPath << std::endl;
         } else {
-            throw FilterException("Error: Could not save the blurred image!");
+            throw FilterException("Error: Could not save the blurred original image!");
         }
-        std::cout << "BlurFilter::applyFilter" << std::endl;
-    }
-    catch (const FilterException& e)
-    {
+    } catch (const FilterException &e) {
         std::cerr << e.what() << std::endl;
     }
-
 }
 
+// -------------------------------- CropFilter --------------------------------
 
-//Crop Filter
-CropFilter::CropFilter(const std::string& path) : Filter(path){}
-void CropFilter::applyFilter()
-{
-    try
-    {
-        cv::Mat src = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg");
+// Constructor: Initialize CropFilter with a default or given path
+CropFilter::CropFilter(const std::string& path) : Filter(path) {}
+
+// Crop the image to the specified region of interest (ROI)
+void CropFilter::applyFilter() {
+    try {
+        const cv::Mat src = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg");
         if (src.empty()) {
-            std::cerr << "Error loading image\n";
             throw FilterException("Could not find image!");
         }
-        cv::Mat dst;
-        cv::Rect roi(a, b, c, d);
 
-        // Crop the image using the ROI
-        dst = src(roi);
+        const cv::Rect roi(a, b, c, d); // Define the ROI for cropping
+        const cv::Mat dst = src(roi);  // Crop the image
 
+        // Save the cropped image
         std::string outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg";
         if (cv::imwrite(outputPath, dst)) {
-            std::cout << "Contrasted image saved successfully to " << outputPath << std::endl;
+            std::cout << "Cropped image saved successfully to " << outputPath << std::endl;
         } else {
-            throw FilterException("Error: Could not save the blurred image!");
+            throw FilterException("Error: Could not save the cropped image!");
         }
-        std::cout << "BlurFilter::applyFilter" << std::endl;
 
         outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg";
         if (cv::imwrite(outputPath, dst)) {
-            std::cout << "Contrasted image saved successfully to " << outputPath << std::endl;
+            std::cout << "Cropped image saved successfully to " << outputPath << std::endl;
         } else {
-            throw FilterException("Error: Could not save the blurred image!");
+            throw FilterException("Error: Could not save the cropped image!");
         }
-        std::cout << "BlurFilter::applyFilter" << std::endl;
 
-    }catch (const FilterException& e)
-    {
+    } catch (const FilterException &e) {
         std::cerr << e.what() << std::endl;
     }
 }
 
-void adjustContrast(const cv::Mat& src, cv::Mat& dst, double alpha, double beta = 0) {
+// -------------------------------- ContrastFilter --------------------------------
+
+// Function to adjust contrast using alpha and beta values
+void adjustContrast(const cv::Mat &src, cv::Mat &dst, double alpha, double beta = 0) {
     src.convertTo(dst, -1, alpha, beta);
 }
-//Contrast Filter
-ContrastFilter::ContrastFilter(const std::string& path) : Filter(path){}
-void ContrastFilter::applyFilter()
-{
-    try
-    {
-        cv::Mat src = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg");
-        if (src.empty()) {
-            std::cerr << "Error loading image\n";
-            throw FilterException("Could not find image!");
-        }
-        cv::Mat dst;
-        double alpha = contrast;
-        double beta = 0;
-        adjustContrast(src, dst, alpha, beta);
-        adjustContrast(src, src, alpha, beta);
 
+// Constructor: Initialize ContrastFilter with a default or given path
+ContrastFilter::ContrastFilter(const std::string& path) : Filter(path) {}
+
+// Apply contrast adjustment to the image
+void ContrastFilter::applyFilter() {
+    try {
+        image = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg");
+        if (image.empty()) {
+            throw FilterException("Could not find the original image!");
+        }
+
+        originalImage = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg");
+        if (originalImage.empty()) {
+            throw FilterException("Could not find the temp image!");
+        }
+
+        cv::Mat dst;
+        adjustContrast(originalImage, dst, contrast); // Adjust contrast for the original image
+
+        cv::Mat dst2;
+        adjustContrast(image, dst2, contrast); // Adjust contrast for the scaled image
+
+        // Save the contrasted image
         std::string outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg";
+        if (cv::imwrite(outputPath, dst2)) {
+            std::cout << "Contrasted image saved successfully to " << outputPath << std::endl;
+        } else {
+            throw FilterException("Error: Could not save the contrasted image!");
+        }
+
+        outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg";
         if (cv::imwrite(outputPath, dst)) {
             std::cout << "Contrasted image saved successfully to " << outputPath << std::endl;
         } else {
-            throw FilterException("Error: Could not save the blurred image!");
+            throw FilterException("Error: Could not save the contrasted image!");
         }
-        std::cout << "BlurFilter::applyFilter" << std::endl;
 
-        outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg";
-        if (cv::imwrite(outputPath, src)) {
-            std::cout << "Contrasted image saved successfully to " << outputPath << std::endl;
-        } else {
-            throw FilterException("Error: Could not save the blurred image!");
-        }
-        std::cout << "BlurFilter::applyFilter" << std::endl;
-
-    }catch (const FilterException& e)
-    {
+    } catch (const FilterException &e) {
         std::cerr << e.what() << std::endl;
     }
-
 }
 
+// -------------------------------- SaturationFilter --------------------------------
 
-
-
-void adjustSaturation(cv::Mat& src, cv::Mat& dst, double alpha) {
+// Function to adjust saturation by modifying the HSV channels
+void adjustSaturation(const cv::Mat &src, cv::Mat &dst, double alpha) {
     cv::Mat hsv;
     cv::cvtColor(src, hsv, cv::COLOR_BGR2HSV);
     std::vector<cv::Mat> hsvChannels;
     cv::split(hsv, hsvChannels);
-    hsvChannels[1] = hsvChannels[1] * alpha;
+
+    hsvChannels[1] = hsvChannels[1] * alpha; // Modify the saturation channel
     cv::threshold(hsvChannels[1], hsvChannels[1], 255, 255, cv::THRESH_TRUNC);
+
     cv::merge(hsvChannels, hsv);
     cv::cvtColor(hsv, dst, cv::COLOR_HSV2BGR);
-    std::cout << "ContrastFilter::applyFilter" << std::endl;
 }
-//Saturation Filter
-SaturationFilter::SaturationFilter(const std::string& path) : Filter(path){}
-void SaturationFilter::applyFilter()
-{
-    try
-    {
-        cv::Mat src = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg");
-        if (src.empty()) {
-            std::cerr << "Error loading image\n";
-            throw FilterException("Could not find image!");
-        }
-        cv::Mat dst;
-        adjustSaturation(src, dst, saturation);
-        adjustSaturation(src, src, saturation);
 
-        std::string outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg";
-        if (cv::imwrite(outputPath, dst)) {
-            std::cout << "Contrasted image saved successfully to " << outputPath << std::endl;
-        } else {
-            throw FilterException("Error: Could not save the blurred image!");
+// Constructor: Initialize SaturationFilter with a default or given path
+SaturationFilter::SaturationFilter(const std::string& path) : Filter(path) {}
+
+// Apply saturation adjustment to the image
+void SaturationFilter::applyFilter() {
+    try {
+        image = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg");
+        if (image.empty()) {
+            throw FilterException("Could not find the scaled image!");
         }
-        std::cout << "BlurFilter::applyFilter" << std::endl;
+        originalImage = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg");
+        if (originalImage.empty()) {
+            throw FilterException("Could not find the original image!");
+        }
+
+        cv::Mat dst;
+        adjustSaturation(image, dst, saturation); // Adjust saturation for the scaled image
+
+        cv::Mat dst2;
+        adjustSaturation(originalImage, dst2, saturation); // Adjust saturation
+
+        // Save the adjusted image
+        std::string outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg";
+        if (cv::imwrite(outputPath, dst2)) {
+            std::cout << "Saturation-adjusted image saved successfully to " << outputPath << std::endl;
+        } else {
+            throw FilterException("Error: Could not save the adjusted image!");
+        }
 
         outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg";
-        if (cv::imwrite(outputPath, src)) {
-            std::cout << "Contrasted image saved successfully to " << outputPath << std::endl;
+        if (cv::imwrite(outputPath, dst)) {
+            std::cout << "Saturation-adjusted image saved successfully to " << outputPath << std::endl;
         } else {
-            throw FilterException("Error: Could not save the blurred image!");
+            throw FilterException("Error: Could not save the adjusted image!");
         }
-        std::cout << "BlurFilter::applyFilter" << std::endl;
-
-    }catch (const FilterException& e)
-    {
+    } catch (const FilterException &e) {
         std::cerr << e.what() << std::endl;
     }
 }
-
-

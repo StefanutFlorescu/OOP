@@ -28,7 +28,7 @@ add_executable(OOP-main
         generated/src/Filter.cpp
         generated/src/Button.cpp
         generated/src/Frame.cpp
-        generated/src/Text_Frame.cpp
+        generated/src/TextFrame.cpp
         generated/src/Helper.cpp
 )
 
@@ -41,7 +41,7 @@ add_executable(my_tests
         generated/src/Filter.cpp
         generated/src/Button.cpp
         generated/src/Frame.cpp
-        generated/src/Text_Frame.cpp
+        generated/src/TextFrame.cpp
         generated/src/Helper.cpp
         generated/include/Exception.cpp
         generated/include/Exception.h
