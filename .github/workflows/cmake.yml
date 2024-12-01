@@ -2,14 +2,22 @@ name: C++ CI
 
 on:
   push:
-    branches:
-      - '*'
-    tags:
-      - '*'
+    branches: ['*']
+    tags: ['*']
   pull_request:
-    branches:
-      - '*'
+    branches: ['*']
   workflow_dispatch:
+    inputs:
+      build_type:
+        description: Build type
+        required: false
+        default: 'Debug'
+        type: choice
+        options:
+          - Debug
+          - Release
+          - RelWithDebInfo
+          - MinSizeRel
 
 env:
   BUILD_TYPE: ${{ inputs.build_type || 'Debug' }}
@@ -35,7 +43,7 @@ jobs:
           cppcheck --enable=all --inconclusive --std=c++20 --quiet src/ generated/src/
 
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -47,15 +55,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Setup dependencies
+        shell: bash
         run: |
           if [[ ${{ matrix.os }} == 'ubuntu-22.04' ]]; then
             sudo apt update
             sudo apt install -y libopencv-dev libsfml-dev cmake g++
           elif [[ ${{ matrix.os }} == 'macos-14' ]]; then
-            brew install opencv sfml cmake
+            if ! command -v brew &>/dev/null; then
+              /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            fi
+            brew install opencv sfml cmake llvm
           elif [[ ${{ matrix.os }} == 'windows-2022' ]]; then
-            choco install cmake mingw
+            powershell -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; `
+            iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
+            choco install llvm cmake mingw
           fi
 
       - name: Configure CMake
@@ -70,6 +84,7 @@ jobs:
           cmake --build .
 
       - name: Run Tests
+        shell: bash
         run: |
           cd build
           ctest --output-on-failure
@@ -84,6 +99,33 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y clang-tidy
+
+      - name: Run clang-tidy
+        run: |
+          clang-tidy src/*.cpp -- -std=c++20
+
+  clang-tidy-macos-windows:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, windows-2022]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install clang-tidy dependencies
+        run: |
+          if [[ ${{ matrix.os }} == 'macos-14' ]]; then
+            if ! command -v clang-tidy &> /dev/null; then
+              brew install llvm
+            fi
+          elif [[ ${{ matrix.os }} == 'windows-2022' ]]; then
+            powershell -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; `
+            iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
+            choco install llvm
+          fi
 
       - name: Run clang-tidy
         run: |
