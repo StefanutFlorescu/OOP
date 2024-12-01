@@ -1,3 +1,31 @@
+name: C++ CI
+
+on:
+  push:
+    branches: ['*']
+    tags: ['*']
+  pull_request:
+    branches: ['*']
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: Build type
+        required: false
+        default: 'Debug'
+        type: choice
+        options:
+          - Debug
+          - Release
+          - RelWithDebInfo
+          - MinSizeRel
+
+env:
+  BUILD_TYPE: ${{ inputs.build_type || 'Debug' }}
+  EXECUTABLE_NAME: "oop"
+  INPUT_FILENAME: "tastatura.txt"
+  BIN_DIR: "bin"
+  BUILD_DIR: "build"
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
