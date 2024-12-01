@@ -71,10 +71,9 @@ jobs:
               brew install opencv sfml cmake llvm
             fi
           elif [[ ${{ matrix.os }} == 'windows-2022' ]]; then
-            # Windows (PowerShell)
-            if ($env:OS -eq "Windows_NT") {
-              choco install opencv llvm cmake mingw
-            }
+            # Windows (use batch commands for compatibility)
+            echo "Installing dependencies for Windows"
+            choco install opencv llvm cmake mingw
           fi
 
       - name: Configure CMake
