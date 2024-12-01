@@ -1,32 +1,98 @@
-name: Build and Test
+name: C++ CI
 
 on:
   push:
-    branches:
-      - main
+    branches: ['*']
+    tags: ['*']
   pull_request:
+    branches: ['*']
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: Build type
+        required: false
+        default: 'Debug'
+        type: choice
+        options:
+          - Debug
+          - Release
+          - RelWithDebInfo
+          - MinSizeRel
+
+env:
+  BUILD_TYPE: ${{ inputs.build_type || 'Debug' }}
+  EXECUTABLE_NAME: "oop"
+  INPUT_FILENAME: "tastatura.txt"
+  BIN_DIR: "bin"
+  BUILD_DIR: "build"
 
 jobs:
+  cppcheck:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install cppcheck
+        run: |
+          sudo apt update
+          sudo apt install -y cppcheck
+
+      - name: Run cppcheck
+        run: |
+          cppcheck --enable=all --inconclusive --std=c++20 --quiet src/ generated/src/
+
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-14, windows-2022]
+        compiler: [gcc, clang]
+        build_type: [Debug, Release]
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt install -y libopencv-dev libsfml-dev cmake g++ build-essential
+          if [[ ${{ matrix.os }} == 'ubuntu-22.04' ]]; then
+            sudo apt update
+            sudo apt install -y libopencv-dev libsfml-dev cmake g++
+          elif [[ ${{ matrix.os }} == 'macos-14' ]]; then
+            brew install opencv sfml cmake
+          elif [[ ${{ matrix.os }} == 'windows-2022' ]]; then
+            choco install cmake mingw
+          fi
 
-      - name: Configure and build
+      - name: Configure CMake
         run: |
           mkdir -p build
           cd build
-          cmake ..
+          cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
+
+      - name: Build
+        run: |
+          cd build
           cmake --build .
 
-      - name: Run tests
+      - name: Run Tests
         run: |
           cd build
           ctest --output-on-failure
+
+  clang-tidy:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install clang-tidy
+        run: |
+          sudo apt update
+          sudo apt install -y clang-tidy
+
+      - name: Run clang-tidy
+        run: |
+          clang-tidy src/*.cpp -- -std=c++20
