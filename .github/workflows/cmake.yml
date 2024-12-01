@@ -67,9 +67,11 @@ jobs:
             fi
             brew install opencv sfml cmake llvm
           elif [[ ${{ matrix.os }} == 'windows-2022' ]]; then
-            powershell -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; `
-            iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
-            choco install llvm cmake mingw
+            powershell -Command "
+              Set-ExecutionPolicy Bypass -Scope Process -Force;
+              iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'));
+            "
+            choco install llvm cmake mingw -y
           fi
 
       - name: Configure CMake
@@ -84,7 +86,6 @@ jobs:
           cmake --build .
 
       - name: Run Tests
-        shell: bash
         run: |
           cd build
           ctest --output-on-failure
@@ -122,9 +123,11 @@ jobs:
               brew install llvm
             fi
           elif [[ ${{ matrix.os }} == 'windows-2022' ]]; then
-            powershell -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; `
-            iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
-            choco install llvm
+            powershell -Command "
+              Set-ExecutionPolicy Bypass -Scope Process -Force;
+              iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'));
+            "
+            choco install llvm -y
           fi
 
       - name: Run clang-tidy
