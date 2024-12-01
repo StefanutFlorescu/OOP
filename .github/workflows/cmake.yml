@@ -61,8 +61,16 @@ jobs:
             sudo apt update
             sudo apt install -y libopencv-dev libsfml-dev cmake g++
           elif [[ ${{ matrix.os }} == 'macos-14' ]]; then
+            if ! command -v brew &> /dev/null; then
+              /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            fi
             brew install opencv sfml cmake llvm
           elif [[ ${{ matrix.os }} == 'windows-2022' ]]; then
+            # Ensure Chocolatey is installed on Windows
+            if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+              Set-ExecutionPolicy Bypass -Scope Process -Force;
+              iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+            }
             choco install llvm cmake mingw
           fi
 
@@ -113,9 +121,9 @@ jobs:
               brew install llvm
             fi
           elif [[ "${{ matrix.os }}" == 'windows-2022' ]]; then
-            if ! command -v clang-tidy &> /dev/null; then
+            if (-not (Get-Command clang-tidy -ErrorAction SilentlyContinue)) {
               choco install llvm
-            fi
+            }
           fi
 
       - name: Run clang-tidy
