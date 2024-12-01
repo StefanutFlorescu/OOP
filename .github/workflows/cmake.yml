@@ -27,6 +27,21 @@ env:
   BUILD_DIR: "build"
 
 jobs:
+  cppcheck:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install cppcheck
+        run: |
+          sudo apt update
+          sudo apt install -y cppcheck
+
+      - name: Run cppcheck
+        run: |
+          cppcheck --enable=all --inconclusive --std=c++20 --quiet src/ generated/src/
+
   build:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -42,16 +57,21 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if [[ ${{ matrix.os }} == 'ubuntu-22.04' ]]; then
-            sudo apt update
-            sudo apt install -y libopencv-dev libsfml-dev cmake g++
-          elif [[ ${{ matrix.os }} == 'macos-14' ]]; then
-            if ! command -v brew &> /dev/null; then
-              echo "Homebrew not found. Installing..."
-              /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          # Check if the OS is Ubuntu/macOS or Windows and install dependencies accordingly
+          if [[ ${{ matrix.os }} == 'ubuntu-22.04' ]] || [[ ${{ matrix.os }} == 'macos-14' ]]; then
+            # Ubuntu and macOS
+            if [[ ${{ matrix.os }} == 'ubuntu-22.04' ]]; then
+              sudo apt update
+              sudo apt install -y libopencv-dev libsfml-dev cmake g++
+            elif [[ ${{ matrix.os }} == 'macos-14' ]]; then
+              if ! command -v brew &> /dev/null; then
+                echo "Homebrew not found. Installing..."
+                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+              fi
+              brew install opencv sfml cmake llvm
             fi
-            brew install opencv sfml cmake llvm
           elif [[ ${{ matrix.os }} == 'windows-2022' ]]; then
+            # Windows (PowerShell)
             if ($env:OS -eq "Windows_NT") {
               choco install opencv llvm cmake mingw
             }
@@ -72,3 +92,43 @@ jobs:
         run: |
           cd build
           ctest --output-on-failure
+
+  clang-tidy:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install clang-tidy
+        run: |
+          sudo apt update
+          sudo apt install -y clang-tidy
+
+      - name: Run clang-tidy
+        run: |
+          clang-tidy src/*.cpp -- -std=c++20
+
+  clang-tidy-macos-windows:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-14, windows-2022]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install clang-tidy dependencies
+        run: |
+          if [[ "${{ matrix.os }}" == 'macos-14' ]]; then
+            if ! command -v clang-tidy &> /dev/null; then
+              brew install llvm
+            fi
+          elif [[ "${{ matrix.os }}" == 'windows-2022' ]]; then
+            if ! command -v clang-tidy &> /dev/null; then
+              choco install llvm
+            fi
+          fi
+
+      - name: Run clang-tidy
+        run: |
+          clang-tidy src/*.cpp -- -std=c++20
