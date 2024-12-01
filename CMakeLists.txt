@@ -7,19 +7,24 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Find OpenCV package
-set(OpenCV_DIR "${CMAKE_SOURCE_DIR}/../cmake/opencv4")
-find_package(OpenCV REQUIRED)
+# Use FetchContent for dependencies
+include(FetchContent)
 
-if(OpenCV_FOUND)
-    message(STATUS "OpenCV found: ${OpenCV_VERSION}")
-else()
-    message(FATAL_ERROR "OpenCV not found.")
-endif()
+# Fetch OpenCV
+FetchContent_Declare(
+        OpenCV
+        GIT_REPOSITORY https://github.com/opencv/opencv.git
+        #GIT_TAG 4.x  # You can specify a specific version, e.g., 4.10.0
+)
+FetchContent_MakeAvailable(OpenCV)
 
-# Find SFML package
-set(SFML_DIR "/opt/homebrew/opt/sfml/lib/cmake/SFML")
-find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
+# Fetch SFML
+FetchContent_Declare(
+        SFML
+        GIT_REPOSITORY https://github.com/SFML/SFML.git
+        GIT_TAG 2.5.1  # You can specify a specific version
+)
+FetchContent_MakeAvailable(SFML)
 
 # Create the main executable
 add_executable(OOP-main
@@ -51,14 +56,14 @@ add_executable(my_tests
 target_include_directories(OOP-main PRIVATE
         src
         ${OpenCV_INCLUDE_DIRS}
-        ${SFML_INCLUDE_DIRS}
+        ${SFML_INCLUDE_DIR}
 )
 
 # Specify include directories for your tests
 target_include_directories(my_tests PRIVATE
         src
         ${OpenCV_INCLUDE_DIRS}
-        ${SFML_INCLUDE_DIRS}
+        ${SFML_INCLUDE_DIR}
 )
 
 # Link OpenCV and SFML libraries to your main executable
