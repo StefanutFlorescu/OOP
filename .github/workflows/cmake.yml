@@ -1,19 +1,41 @@
+name: C++ CI
+
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: ${{ inputs.build_type || 'Debug' }}
+  EXECUTABLE_NAME: "oop"
+  INPUT_FILENAME: "tastatura.txt"
+  BIN_DIR: "bin"
+  BUILD_DIR: "build"
+
 jobs:
   cppcheck:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Install cppcheck
         run: |
           sudo apt update
           sudo apt install -y cppcheck
+
       - name: Run cppcheck
         run: |
           cppcheck --enable=all --inconclusive --std=c++20 --quiet src/ generated/src/
 
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -24,26 +46,29 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Install dependencies
-        shell: bash
         run: |
           if [[ ${{ matrix.os }} == 'ubuntu-22.04' ]]; then
             sudo apt update
             sudo apt install -y libopencv-dev libsfml-dev cmake g++
           elif [[ ${{ matrix.os }} == 'macos-14' ]]; then
-            brew install opencv sfml cmake llvm
+            brew install opencv sfml cmake
           elif [[ ${{ matrix.os }} == 'windows-2022' ]]; then
-            choco install llvm cmake mingw
+            choco install cmake mingw
           fi
+
       - name: Configure CMake
         run: |
           mkdir -p build
           cd build
           cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
+
       - name: Build
         run: |
           cd build
           cmake --build .
+
       - name: Run Tests
         run: |
           cd build
@@ -54,32 +79,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Install clang-tidy
         run: |
           sudo apt update
           sudo apt install -y clang-tidy
-      - name: Run clang-tidy
-        run: |
-          clang-tidy src/*.cpp -- -std=c++20
 
-  clang-tidy-macos-windows:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-14, windows-2022]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Install clang-tidy dependencies
-        run: |
-          if [[ ${{ matrix.os }} == 'macos-14' ]]; then
-            if ! command -v clang-tidy &> /dev/null; then
-              brew install llvm
-            fi
-          elif [[ ${{ matrix.os }} == 'windows-2022' ]]; then
-            choco install llvm
-          fi
       - name: Run clang-tidy
         run: |
           clang-tidy src/*.cpp -- -std=c++20
