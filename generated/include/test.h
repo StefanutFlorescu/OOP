@@ -10,7 +10,7 @@
 #include "Filter.h"
 #include "Image.h"
 #include "Frame.h"
-#include "Text_Frame.h"
+#include "TextFrame.h"
 
 #include <iostream>
 int Frame::WIDTH = 860;
