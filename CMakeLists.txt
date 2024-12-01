@@ -7,24 +7,16 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Use FetchContent for dependencies
-include(FetchContent)
+# Find OpenCV package dynamically
+find_package(OpenCV REQUIRED)
+if(OpenCV_FOUND)
+    message(STATUS "OpenCV found: ${OpenCV_VERSION}")
+else()
+    message(FATAL_ERROR "OpenCV not found.")
+endif()
 
-# Fetch OpenCV
-FetchContent_Declare(
-        OpenCV
-        GIT_REPOSITORY https://github.com/opencv/opencv.git
-        #GIT_TAG 4.x  # You can specify a specific version, e.g., 4.10.0
-)
-FetchContent_MakeAvailable(OpenCV)
-
-# Fetch SFML
-FetchContent_Declare(
-        SFML
-        GIT_REPOSITORY https://github.com/SFML/SFML.git
-        GIT_TAG 2.5.1  # You can specify a specific version
-)
-FetchContent_MakeAvailable(SFML)
+# Find SFML package dynamically
+find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
 
 # Create the main executable
 add_executable(OOP-main
@@ -52,21 +44,20 @@ add_executable(my_tests
         generated/include/Exception.h
 )
 
-# Specify include directories for the main project
+# Specify include directories
 target_include_directories(OOP-main PRIVATE
         src
         ${OpenCV_INCLUDE_DIRS}
-        ${SFML_INCLUDE_DIR}
+        ${SFML_INCLUDE_DIRS}
 )
 
-# Specify include directories for your tests
 target_include_directories(my_tests PRIVATE
         src
         ${OpenCV_INCLUDE_DIRS}
-        ${SFML_INCLUDE_DIR}
+        ${SFML_INCLUDE_DIRS}
 )
 
-# Link OpenCV and SFML libraries to your main executable
+# Link OpenCV and SFML libraries
 target_link_libraries(OOP-main PRIVATE
         ${OpenCV_LIBS}
         sfml-graphics
@@ -74,7 +65,6 @@ target_link_libraries(OOP-main PRIVATE
         sfml-system
 )
 
-# Link OpenCV and SFML libraries to your test executable
 target_link_libraries(my_tests PRIVATE
         ${OpenCV_LIBS}
         sfml-graphics
@@ -88,6 +78,3 @@ install(TARGETS OOP-main
 
 install(TARGETS my_tests
         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-
-# Optionally, specify installation of other files (e.g., headers, resources)
-# install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include)

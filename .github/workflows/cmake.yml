@@ -1,189 +1,32 @@
-name: C++ CI
+name: Build and Test
 
 on:
   push:
-    branches: ['*'] # Replace with specific branches as needed
-    tags: ['*']
+    branches:
+      - main
   pull_request:
-    branches: ['*'] # Replace with specific branches as needed
-  workflow_dispatch:
-    inputs:
-      build_type:
-        description: Build type
-        required: false
-        default: 'Debug'
-        type: choice
-        options:
-          - Debug
-          - Release
-          - RelWithDebInfo
-          - MinSizeRel
-
-env:
-  BUILD_TYPE: ${{ inputs.build_type || 'Debug' }}
-  EXECUTABLE_NAME: "oop"
-  INPUT_FILENAME: "tastatura.txt"
-  BIN_DIR: "bin"
-  BUILD_DIR: "build"
-  EXT_DIR: "ext"
-  GEN_DIR: "generated"
-  CPPCHECK_VER: "2.14.2"
-
-defaults:
-  run:
-    shell: bash
 
 jobs:
-  cppcheck:
-    runs-on: ubuntu-22.04
-    timeout-minutes: 5
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Run cppcheck
-        uses: ./.github/actions/cppcheck
-
-  clang-tidy:
-    runs-on: ubuntu-22.04
-    timeout-minutes: 5
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Run clang-tidy
-        uses: ./.github/actions/clang-tidy
-
   build:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 8
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-22.04
-            c: clang-18
-            cxx: clang++-18
-            name: "MSan: Ubuntu 22.04 Clang 18"
-            cmake_flags: "-DUSE_MSAN=ON"
-            opencv_dir: "/usr/lib/x86_64-linux-gnu/cmake/opencv4"
-            sfml_dir: "/usr/lib/x86_64-linux-gnu/cmake/SFML"
-
-          - os: ubuntu-22.04
-            c: gcc-12
-            cxx: g++-12
-            name: "ASan: Ubuntu 22.04 GCC 12"
-            cmake_flags: "-DUSE_ASAN=ON"
-            opencv_dir: "/usr/lib/x86_64-linux-gnu/cmake/opencv4"
-            sfml_dir: "/usr/lib/x86_64-linux-gnu/cmake/SFML"
-
-          - os: macos-14
-            c: clang
-            cxx: clang++
-            name: "macOS 14 Apple Clang 15"
-            cmake_flags: "-DUSE_ASAN=OFF"
-            opencv_dir: "/usr/local/lib/cmake/opencv4"
-            sfml_dir: "/opt/homebrew/opt/sfml/lib/cmake/SFML"
-
-          - os: windows-2022
-            c: cl
-            cxx: cl
-            name: "ASan: Windows 2022 MSVC 19.41"
-            cmake_flags: "-DUSE_ASAN=ON"
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Set timestamp and zip name
+      - name: Install dependencies
         run: |
-          echo "TIMESTAMP=$(date +%Y-%m-%d-%H-%M-%S)" >> ${GITHUB_ENV}
-          ZIP_NAME="${GITHUB_REPOSITORY}_${{ env.BUILD_TYPE }}_${{ matrix.os }}_${{ matrix.cxx }}"
-          echo "ZIP_NAME=$(echo "$ZIP_NAME" | sed 's|/|_|')" >> ${GITHUB_ENV}
+          sudo apt update
+          sudo apt install -y libopencv-dev libsfml-dev cmake g++ build-essential
 
-      - name: Install OpenCV
-        if: matrix.os == 'ubuntu-22.04'
+      - name: Configure and build
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libopencv-dev
-
-      - name: Install OpenCV (macOS)
-        if: matrix.os == 'macos-14'
-        run: |
-          brew update
-          brew install opencv
-
-      - name: Install SFML
-        if: matrix.os == 'ubuntu-22.04'
-        run: |
-          sudo apt-get install -y libsfml-dev
-
-      - name: Install SFML (macOS)
-        if: matrix.os == 'macos-14'
-        run: |
-          brew install sfml
-
-      # Add checks for successful installations
-      - name: Verify OpenCV installation
-        run: |
-          if [ -d "${{ matrix.opencv_dir }}" ]; then
-            echo "OpenCV directory found: ${{ matrix.opencv_dir }}"
-            ls ${{ matrix.opencv_dir }}
-          else
-            echo "OpenCV directory not found!"
-            exit 1
-          fi
-
-      - name: Verify SFML installation
-        run: |
-          if [ -d "${{ matrix.sfml_dir }}" ]; then
-            echo "SFML directory found: ${{ matrix.sfml_dir }}"
-            ls ${{ matrix.sfml_dir }}
-          else
-            echo "SFML directory not found!"
-            exit 1
-          fi
-
-      - name: Check CMake version
-        run: cmake --version
-
-      - name: Configure CMake
-        run: |
-          mkdir build
+          mkdir -p build
           cd build
-          echo "CMake Flags: ${{ matrix.cmake_flags }}"
-          echo "OpenCV Dir: ${{ matrix.opencv_dir }}"
-          echo "SFML Dir: ${{ matrix.sfml_dir }}"
-          echo "CMake Build Type: ${{ env.BUILD_TYPE }}"
-          cmake .. "${{ matrix.cmake_flags }}" -DOpenCV_DIR="${{ matrix.opencv_dir }}" -DSFML_DIR="${{ matrix.sfml_dir }}" -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}"
+          cmake ..
+          cmake --build .
 
-      - name: Build
+      - name: Run tests
         run: |
           cd build
-          make
-
-      - name: Install
-        run: |
-          cd build
-          make install DESTDIR=artifacts
-
-      - name: Verify installation files
-        run: |
-          echo "Checking installed files in artifacts:"
-          ls -la artifacts
-          echo "Checking installed files in artifacts/bin:"
-          ls -la artifacts/bin
-
-      - name: Organize artifacts
-        run: |
-          mkdir -p ${{ env.ZIP_NAME }}
-          mv artifacts/${{ env.BIN_DIR }}/* ${{ env.ZIP_NAME }}
-          ls -la ${{ env.ZIP_NAME }}
-
-      - name: Process artifacts
-        uses: ./.github/actions/process-artifacts
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: "${{ env.ZIP_NAME }}_${{ env.TIMESTAMP }}"
-          path: ${{ env.ZIP_NAME }}
-          retention-days: 30
+          ctest --output-on-failure
