@@ -21,13 +21,13 @@ public:
     }
 };
 
-class ImageException : public ApplicationException
+class ImageException final : public ApplicationException
 {
 public:
     explicit ImageException(const std::string& msg) : ApplicationException(msg) {}
 };
 
-class FilterException : public ApplicationException
+class FilterException final : public ApplicationException
 {
 public:
     explicit FilterException(const std::string& msg) : ApplicationException(msg) {}

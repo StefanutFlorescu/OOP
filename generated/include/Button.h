@@ -48,6 +48,9 @@ public:
     // Overloads the << operator for Button class
     friend std::ostream& operator<<(std::ostream& os, const Button& button);
 
+    // Virtual Constructor(Clone)
+    virtual std::shared_ptr<Button> clone() const;
+
     // Updates the button's text
     void change_text(const std::string& text);
 
@@ -67,6 +70,9 @@ public:
     // Constructor with default text
     OpenImageButton(float x, float y, float width, float height, const std::string& text = "Open Image");
 
+    // Virtual Constructor(Clone)
+    std::shared_ptr<Button> clone() const override;
+
     // Updates the button on interaction
     void update(sf::RenderWindow& window, const sf::Event& event) override;
 
@@ -85,6 +91,9 @@ public:
     // Constructor with default text
     OpenInputButton(float x, float y, float width, float height, const std::string& text = "Search Image");
 
+    // Virtual Constructor(Clone)
+    std::shared_ptr<Button> clone() const override;
+
     // Updates the button on interaction
     void update(sf::RenderWindow& window, const sf::Event& event) override;
 
@@ -100,6 +109,9 @@ public:
     // Constructor with default text
     SaveImageButton(float x, float y, float width, float height, const std::string& text = "Save");
 
+    // Virtual Constructor(Clone)
+    std::shared_ptr<Button> clone() const override;
+
     // Updates the button on interaction
     void update(sf::RenderWindow& window, const sf::Event& event) override;
 
@@ -114,6 +126,9 @@ class SaveOutputButton final : public Button {
 public:
     // Constructor with default text
     SaveOutputButton(float x, float y, float width, float height, const std::string& text = "Save Image");
+
+    // Virtual Constructor(Clone)
+    std::shared_ptr<Button> clone() const override;
 
     // Updates the button on interaction
     void update(sf::RenderWindow& window, const sf::Event& event) override;
@@ -132,11 +147,14 @@ protected:
 
 public:
     // Constructor with default text
-    FilterButton(float x, float y, float width, float height, const std::string& text = "Filter")
+    FilterButton(const float x, const float y, const float width, const float height, const std::string& text = "Filter")
         : Button(x, y, width, height, text) {}
 
-    // Pure virtual function to handle interaction
-    void update(sf::RenderWindow& window, const sf::Event& event) override = 0;
+    // Virtual Constructor(Clone)
+    virtual std::shared_ptr<FilterButton> clone();
+
+    // Virtual function to handle interaction
+    void update(sf::RenderWindow& window, const sf::Event& event) override;
 };
 
 // Derived classes for specific filter buttons (Blur, Crop, Contrast, Saturation)
@@ -145,6 +163,8 @@ class BlurFilterButton final : public FilterButton {
 
 public:
     BlurFilterButton(float x, float y, float width, float height, const std::string& text = "Blur");
+    // Virtual Constructor(Clone)
+    std::shared_ptr<FilterButton> clone() override;
     void update(sf::RenderWindow& window, const sf::Event& event) override;
 };
 
@@ -153,6 +173,8 @@ class CropFilterButton final : public FilterButton {
 
 public:
     CropFilterButton(float x, float y, float width, float height, const std::string& text = "Crop");
+    // Virtual Constructor(Clone)
+    std::shared_ptr<FilterButton> clone() override;
     void update(sf::RenderWindow& window, const sf::Event& event) override;
 };
 
@@ -161,6 +183,8 @@ class ContrastFilterButton final : public FilterButton {
 
 public:
     ContrastFilterButton(float x, float y, float width, float height, const std::string& text = "Contrast");
+    // Virtual Constructor(Clone)
+    std::shared_ptr<FilterButton> clone() override;
     void update(sf::RenderWindow& window, const sf::Event& event) override;
 };
 
@@ -169,6 +193,8 @@ class SaturationFilterButton final : public FilterButton {
 
 public:
     SaturationFilterButton(float x, float y, float width, float height, const std::string& text = "Saturation");
+    // Virtual Constructor(Clone)
+    std::shared_ptr<FilterButton> clone() override;
     void update(sf::RenderWindow& window, const sf::Event& event) override;
 };
 
@@ -179,6 +205,8 @@ class SelectSaturationButton final : public FilterButton {
 public:
     SelectSaturationButton(float x, float y, float width, float height, const std::string& text = "Select");
     void update(sf::RenderWindow& window, const sf::Event& event) override;
+    // Virtual Constructor(Clone)
+    std::shared_ptr<FilterButton> clone() override;
     void changeValue(const int value) { this->value = value; }
 };
 
@@ -188,6 +216,8 @@ class SelectContrastButton final : public FilterButton {
 public:
     SelectContrastButton(float x, float y, float width, float height, const std::string& text = "Select");
     void update(sf::RenderWindow& window, const sf::Event& event) override;
+    // Virtual Constructor(Clone)
+    std::shared_ptr<FilterButton> clone() override;
     void changeValue(const int value) { this->value = value; }
 };
 
@@ -197,6 +227,8 @@ class SelectBlurButton final : public FilterButton {
 public:
     SelectBlurButton(float x, float y, float width, float height, const std::string& text = "Select");
     void update(sf::RenderWindow& window, const sf::Event& event) override;
+    // Virtual Constructor(Clone)
+    std::shared_ptr<FilterButton> clone() override;
     void changeValue(const int value) { this->value = value; }
 };
 
@@ -205,6 +237,8 @@ class SelectCropButton final : public FilterButton {
 
 public:
     SelectCropButton(float x, float y, float width, float height, const std::string& text = "Select");
+    // Virtual Constructor(Clone)
+    std::shared_ptr<FilterButton> clone() override;
     void update(sf::RenderWindow& window, const sf::Event& event) override;
     void changeValue(const int a, const int b, const int c, const int d) {
         this->a = a;

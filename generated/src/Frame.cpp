@@ -168,3 +168,47 @@ bool Frame::switchReady() {
 bool Frame::getReady() {
     return READY;
 }
+
+
+/////////////---------------cc/op=, copy and swap-------------////////////
+Frame::Frame(const Frame& other) {
+    // Deep copy of filterButtons (assuming FilterButton has a clone method)
+    for (const auto& button : other.filterButtons) {
+        this->filterButtons.push_back(button ? button->clone() : nullptr);
+    }
+
+    // Deep copy of searchImageButton and saveButton (shared pointers)
+    this->searchImageButton = other.searchImageButton ?
+        std::make_shared<OpenInputButton>(*other.searchImageButton) : nullptr;
+    this->saveButton = other.saveButton ?
+        std::make_shared<SaveImageButton>(*other.saveButton) : nullptr;
+}
+
+Frame& Frame::operator=(const Frame& other) {
+    if (this != &other) { // Prevent self-assignment
+        // Clear current state
+        this->filterButtons.clear();
+        this->searchImageButton.reset();
+        this->saveButton.reset();
+
+        // Deep copy of filterButtons (assuming FilterButton has a clone method)
+        for (const auto& button : other.filterButtons) {
+            this->filterButtons.push_back(button ? button->clone() : nullptr);
+        }
+
+        // Deep copy of searchImageButton and saveButton (shared pointers)
+        this->searchImageButton = other.searchImageButton ?
+            std::make_shared<OpenInputButton>(*other.searchImageButton) : nullptr;
+        this->saveButton = other.saveButton ?
+            std::make_shared<SaveImageButton>(*other.saveButton) : nullptr;
+    }
+    return *this;
+}
+
+Frame::Frame(Frame&& other) noexcept {
+    // Move the data from 'other' to 'this' object
+    this->filterButtons = std::move(other.filterButtons);
+    this->searchImageButton = std::move(other.searchImageButton);
+    this->saveButton = std::move(other.saveButton);
+}
+

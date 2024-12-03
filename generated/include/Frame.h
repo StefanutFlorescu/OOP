@@ -8,6 +8,7 @@
 #include "TextFrame.h"
 #include "Image.h"
 #include "Button.h"
+#include <vector>
 // Forward declarations of classes used within Frame
 class Button;
 class OpenInputButton;
@@ -26,9 +27,9 @@ private:
     static bool READY; // Controls whether the image is ready to display or filter
 
     // UI components
-    std::array<std::unique_ptr<FilterButton>, 4> filterButtons; // Array of filter buttons
-    std::unique_ptr<OpenInputButton> searchImageButton;         // Button for opening input files
-    std::unique_ptr<SaveImageButton> saveButton;                // Button for saving images
+    std::vector<std::shared_ptr<FilterButton>> filterButtons; // Array of filter buttons
+    std::shared_ptr<OpenInputButton> searchImageButton;         // Button for opening input files
+    std::shared_ptr<SaveImageButton> saveButton;                // Button for saving images
 
     // Private member functions
     void initializeButtons();                     // Initializes all buttons in the frame
@@ -39,12 +40,16 @@ public:
     // Constructor and destructor
     explicit Frame(const std::string& title); // Constructs a Frame object with a given title
     ~Frame() = default;                       // Default destructor for automatic cleanup
-
+///////-------------------Modifying for the moment, this will be a singleton--------////////////
     // Deleting copy and move semantics to ensure a single instance of Frame
-    Frame(const Frame&) = delete;            // Delete copy constructor
-    Frame(Frame&&) = delete;                 // Delete move constructor
-    Frame& operator=(const Frame&) = delete; // Delete copy assignment operator
-
+    // Frame(const Frame&) = delete;            // Delete copy constructor
+    // Frame(Frame&&) = delete;                 // Delete move constructor
+    // Frame& operator=(const Frame&) = delete; // Delete copy assignment operator
+    Frame(const Frame& other);
+    Frame(Frame&& other) noexcept ;
+    Frame& operator=(const Frame& other);
+    friend void swap(Frame& first, Frame& second) noexcept;
+///////-------------------Modifying for the moment, this will be a singleton--------////////////
     // Friend function for output streaming
     friend std::ostream& operator<<(std::ostream& os, const Frame& frame);
 

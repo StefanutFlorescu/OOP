@@ -485,3 +485,93 @@ void SelectCropButton::update(sf::RenderWindow& window, const sf::Event& event)
     }
 }
 
+
+
+/////----------------------Virtual Constructors-----------------------//////
+
+
+std::shared_ptr<Button> Button::clone() const
+{
+    return std::make_shared<Button>(*this);
+}
+
+std::shared_ptr<Button> OpenImageButton::clone() const
+{
+    return std::make_shared<OpenImageButton>(*this);
+}
+
+std::shared_ptr<Button> OpenInputButton::clone() const
+{
+    return std::make_shared<OpenInputButton>(*this);
+}
+
+std::shared_ptr<Button> SaveImageButton::clone() const
+{
+    return std::make_shared<SaveImageButton>(*this);
+}
+
+std::shared_ptr<Button> SaveOutputButton::clone() const
+{
+    return std::make_shared<SaveOutputButton>(*this);
+}
+
+
+
+
+std::shared_ptr<FilterButton> BlurFilterButton::clone()
+{
+    return std::make_shared<FilterButton>(*this);
+}
+
+std::shared_ptr<FilterButton> CropFilterButton::clone()
+{
+    return std::make_shared<FilterButton>(*this);
+}
+
+std::shared_ptr<FilterButton> ContrastFilterButton::clone()
+{
+    return std::make_shared<FilterButton>(*this);
+}
+
+std::shared_ptr<FilterButton> SaturationFilterButton::clone()
+{
+    return std::make_shared<FilterButton>(*this);
+}
+
+
+
+std::shared_ptr<FilterButton> SelectSaturationButton::clone()
+{
+    return std::make_shared<FilterButton>(*this);
+}
+
+std::shared_ptr<FilterButton> SelectBlurButton::clone()
+{
+    return std::make_shared<FilterButton>(*this);
+}
+
+std::shared_ptr<FilterButton> SelectContrastButton::clone()
+{
+    return std::make_shared<FilterButton>(*this);
+}
+std::shared_ptr<FilterButton> SelectCropButton::clone()
+{
+    return std::make_shared<FilterButton>(*this);
+}
+
+std::shared_ptr<FilterButton> FilterButton::clone()
+{
+    return std::make_shared<FilterButton>(*this);
+}
+
+void FilterButton::update(sf::RenderWindow& window, const sf::Event& event)
+{
+    std::cout<<"Updated!"<<std::endl;
+}
+
+
+
+
+
+
+

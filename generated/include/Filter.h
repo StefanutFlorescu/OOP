@@ -25,6 +25,7 @@ protected:
     cv::Mat originalImage;       // Original unaltered image
     std::string path;             // Path to the image file
 
+    virtual void vDisplay()=0;
 public:
     // Constructor with default image path
     explicit Filter(const std::string& path = "/home/stef/CLionProjects/PhotoEditorPhoto/resources/temp.jpg");
@@ -43,6 +44,9 @@ public:
 
     // Pure virtual function to apply a specific filter (to be overridden by derived classes)
     virtual void applyFilter() = 0;
+
+    // Non-virtual display
+    void display();
 };
 
 // BlurFilter class: Applies a blur effect
@@ -58,6 +62,9 @@ public:
 
     // Setter for blur intensity
     void setBlur(const double blur) { this->blur = static_cast<int>(blur); };
+
+    // Virtual Display
+    void vDisplay() override;
 };
 
 // CropFilter class: Crops the image to a specific rectangle
@@ -75,6 +82,9 @@ public:
     void setCrop(const int a, const int b, const int c, const int d) {
         this->a = a; this->b = b; this->c = c; this->d = d;
     };
+
+    // Virtual Display
+    void vDisplay() override;
 };
 
 // ContrastFilter class: Adjusts the image contrast
@@ -90,6 +100,9 @@ public:
 
     // Setter for contrast value
     void setContrast(double contrast) { this->contrast = contrast; };
+
+    // Virtual Display
+    void vDisplay() override;
 };
 
 // SaturationFilter class: Adjusts the image saturation
@@ -105,6 +118,9 @@ public:
 
     // Setter for saturation value
     void setSaturation(double saturation) { this->saturation = saturation; };
+
+    // Virtual Display
+    void vDisplay() override;
 };
 
 // FilterFactory: Factory class for creating filters

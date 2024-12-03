@@ -225,3 +225,38 @@ void SaturationFilter::applyFilter() {
         std::cerr << e.what() << std::endl;
     }
 }
+
+
+///////---------------------Display------------------//////////
+
+void Filter::display()
+{
+    vDisplay();// Calling the virtual function in the non-virtual function
+}
+
+void Filter::vDisplay()
+{
+    std::cout <<"Using BaseFilter class"<<std::endl;
+}
+
+void BlurFilter::vDisplay()
+{
+    std::cout <<"Using BlurFilter class"<<std::endl;
+}
+
+void CropFilter::vDisplay()
+{
+    std::cout <<"Using CropFilter class"<<std::endl;
+}
+
+void SaturationFilter::vDisplay()
+{
+    std::cout <<"Using SaturationFilter class"<<std::endl;
+}
+
+void ContrastFilter::vDisplay()
+{
+    std::cout <<"Using ContrastFilter class"<<std::endl;
+}
+
+
