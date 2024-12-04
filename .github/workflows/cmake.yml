@@ -121,10 +121,10 @@ jobs:
       - name: Verify src directory
         run: |
           if [ -d "generated/src" ]; then
-            echo "src directory exists."
-            ls src
+            echo "generated/src directory exists."
+            ls generated/src
           else
-            echo "src directory does not exist or is empty."
+            echo "generated/src directory does not exist or is empty."
             exit 1
           fi
         shell: bash
@@ -142,5 +142,5 @@ jobs:
 
       - name: Run clang-tidy
         run: |
-          clang-tidy $(find src -name '*.cpp') -- -std=c++20
+          clang-tidy $(find generated/src -name '*.cpp') -- -std=c++20
         shell: bash
