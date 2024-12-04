@@ -68,20 +68,38 @@ jobs:
             fi
             brew install opencv sfml cmake llvm
           elif [ "${{ matrix.os }}" == "windows-2022" ]; then
-            echo "Installing dependencies for Windows"
-              choco install opencv sfml --yes --limit-output
+            choco install opencv --yes --limit-output
               if [ $? -eq 0 ]; then
-              echo "Dependencies installed successfully."
+                echo "OpenCV installed successfully."
               else
-              echo "Dependency installation failed." >&2
+                echo "OpenCV installation failed." >&2
               exit 1
             fi
+          
+            # Try installing SFML using Chocolatey or fallback to manual installation
+            choco install sfml --yes --limit-output || {
+              echo "SFML package not found in Chocolatey. Attempting manual installation."
+              # Here, you could add the steps for downloading SFML manually
+              # For example, you can download and unzip SFML from https://www.sfml-dev.org/download.php
+              # Assuming you've added a URL to a zip file, like this:
+              curl -L https://www.sfml-dev.org/files/SFML-2.5.1-windows-vc15-64-bit.zip -o sfml.zip
+              unzip sfml.zip -d C:\tools\sfml
+              echo "SFML manually installed."
+          }
+            # Configuring OpenCV_DIR and SFML
             echo "Configuring OpenCV_DIR"
             echo "C:\\tools\\opencv\\build" >> $GITHUB_ENV
-            
-            echo "Verifying OpenCV installation"
+            echo "Configuring SFML_DIR"
+            echo "C:\\tools\\sfml" >> $GITHUB_ENV
+          
+          
+            echo "Verifying OpenCV and SFML installation"
             if [ ! -d "C:\\tools\\opencv\\build" ]; then
               echo "Error: OpenCV directory not found at C:\\tools\\opencv\\build" >&2
+              exit 1
+            fi
+            if [ ! -d "C:\\tools\\sfml" ]; then
+              echo "Error: SFML directory not found at C:\\tools\\sfml" >&2
               exit 1
             fi
           fi
