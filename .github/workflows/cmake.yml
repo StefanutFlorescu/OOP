@@ -68,38 +68,57 @@ jobs:
             fi
             brew install opencv sfml cmake llvm
           elif [ "${{ matrix.os }}" == "windows-2022" ]; then
+            # Install OpenCV via Chocolatey
             choco install opencv --yes --limit-output
-              if [ $? -eq 0 ]; then
-                echo "OpenCV installed successfully."
-              else
-                echo "OpenCV installation failed." >&2
+            if [ $? -eq 0 ]; then
+              echo "OpenCV installed successfully."
+            else
+              echo "OpenCV installation failed." >&2
               exit 1
             fi
-          
+
             # Try installing SFML using Chocolatey or fallback to manual installation
             choco install sfml --yes --limit-output || {
               echo "SFML package not found in Chocolatey. Attempting manual installation."
-              # Here, you could add the steps for downloading SFML manually
-              # For example, you can download and unzip SFML from https://www.sfml-dev.org/download.php
-              # Assuming you've added a URL to a zip file, like this:
-              curl -L https://www.sfml-dev.org/files/SFML-2.5.1-windows-vc15-64-bit.zip -o sfml.zip
-              unzip sfml.zip -d C:\tools\sfml
-              echo "SFML manually installed."
-          }
-            # Configuring OpenCV_DIR and SFML
+              # Download SFML from the official website
+              curl -L https://www.sfml-dev.org/files/SFML-2.5.1-windows-vc15-64-bit.zip -o C:\tools\sfml.zip
+              if [ $? -eq 0 ]; then
+                echo "SFML downloaded successfully."
+              else
+                echo "Error downloading SFML." >&2
+                exit 1
+              fi
+
+              # Unzip SFML to C:\tools\sfml
+              unzip C:\tools\sfml.zip -d C:\tools\sfml
+              if [ $? -eq 0 ]; then
+                echo "SFML extracted successfully."
+              else
+                echo "Error extracting SFML." >&2
+                exit 1
+              fi
+
+              # Verify that SFML was extracted
+              if [ ! -d "C:\\tools\\sfml\\SFML-2.5.1" ]; then
+                echo "Error: SFML directory not found at C:\\tools\\sfml\\SFML-2.5.1" >&2
+                exit 1
+              fi
+            }
+
+            # Configuring OpenCV_DIR and SFML_DIR
             echo "Configuring OpenCV_DIR"
             echo "C:\\tools\\opencv\\build" >> $GITHUB_ENV
             echo "Configuring SFML_DIR"
-            echo "C:\\tools\\sfml" >> $GITHUB_ENV
-          
-          
+            echo "C:\\tools\\sfml\\SFML-2.5.1" >> $GITHUB_ENV
+
+            # Verifying OpenCV and SFML installation
             echo "Verifying OpenCV and SFML installation"
             if [ ! -d "C:\\tools\\opencv\\build" ]; then
               echo "Error: OpenCV directory not found at C:\\tools\\opencv\\build" >&2
               exit 1
             fi
-            if [ ! -d "C:\\tools\\sfml" ]; then
-              echo "Error: SFML directory not found at C:\\tools\\sfml" >&2
+            if [ ! -d "C:\\tools\\sfml\\SFML-2.5.1" ]; then
+              echo "Error: SFML directory not found at C:\\tools\\sfml\\SFML-2.5.1" >&2
               exit 1
             fi
           fi
