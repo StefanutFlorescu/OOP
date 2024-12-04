@@ -56,22 +56,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dependencies
+        shell: bash  # Ensure bash is used on all platforms
         run: |
-          # Check if the OS is Ubuntu/macOS or Windows and install dependencies accordingly
-          if [[ ${{ matrix.os }} == 'ubuntu-22.04' ]] || [[ ${{ matrix.os }} == 'macos-14' ]]; then
-            # Ubuntu and macOS
-            if [[ ${{ matrix.os }} == 'ubuntu-22.04' ]]; then
-              sudo apt update
-              sudo apt install -y libopencv-dev libsfml-dev cmake g++
-            elif [[ ${{ matrix.os }} == 'macos-14' ]]; then
-              if ! command -v brew &> /dev/null; then
-                echo "Homebrew not found. Installing..."
-                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-              fi
-              brew install opencv sfml cmake llvm
+          if [ "${{ matrix.os }}" == "ubuntu-22.04" ]; then
+            sudo apt update
+            sudo apt install -y libopencv-dev libsfml-dev cmake g++
+          elif [ "${{ matrix.os }}" == "macos-14" ]; then
+            if ! command -v brew &> /dev/null; then
+              echo "Homebrew not found. Installing..."
+              /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             fi
-          elif [[ ${{ matrix.os }} == 'windows-2022' ]]; then
-            # Windows (use batch commands for compatibility)
+            brew install opencv sfml cmake llvm
+          elif [ "${{ matrix.os }}" == "windows-2022" ]; then
             echo "Installing dependencies for Windows"
             choco install opencv llvm cmake mingw
           fi
@@ -80,7 +76,7 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DOpenCV_DIR="C:/tools/opencv/build" ..
+          cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
 
       - name: Build
         run: |
@@ -105,12 +101,7 @@ jobs:
 
       - name: Run clang-tidy
         run: |
-          # Ensure that the src directory exists and is populated with .cpp files
-          if [ -d "src" ]; then
-            clang-tidy src/*.cpp -- -std=c++20
-          else
-            echo "Source directory 'src' does not exist or is empty."
-          fi
+          clang-tidy src/*.cpp -- -std=c++20
 
   clang-tidy-macos-windows:
     runs-on: ${{ matrix.os }}
@@ -122,17 +113,19 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install clang-tidy dependencies
+        shell: bash  # Use bash shell
         run: |
-          if [[ "${{ matrix.os }}" == 'macos-14' ]]; then
+          if [ "${{ matrix.os }}" == "macos-14" ]; then
             if ! command -v clang-tidy &> /dev/null; then
               brew install llvm
             fi
-          elif [[ "${{ matrix.os }}" == 'windows-2022' ]]; then
+          elif [ "${{ matrix.os }}" == "windows-2022" ]; then
             if ! command -v clang-tidy &> /dev/null; then
               choco install llvm
             fi
           fi
 
       - name: Run clang-tidy
+        shell: bash
         run: |
           clang-tidy src/*.cpp -- -std=c++20
