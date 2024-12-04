@@ -96,7 +96,7 @@ jobs:
 
       - name: Verify src directory
         run: |
-          if [ -d "src" ]; then
+          if [ -d "generated/src" ]; then
             echo "src directory exists."
             ls src
           else
