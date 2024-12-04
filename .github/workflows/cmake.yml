@@ -118,6 +118,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install SFML and OpenCV dependencies
+        run: |
+          if [[ "${{ matrix.os }}" == "macos-14" ]]; then
+            brew install sfml opencv
+            echo 'export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH"' >> ~/.bash_profile
+            source ~/.bash_profile
+          elif [[ "${{ matrix.os }}" == "windows-2022" ]]; then
+            choco install sfml opencv
+            echo "::add-path::C:\Program Files\SFML\include"
+            echo "::add-path::C:\path\to\opencv\include"
+          fi
+        shell: bash
+
       - name: Verify src directory
         run: |
           if [ -d "generated/src" ]; then
@@ -129,18 +142,6 @@ jobs:
           fi
         shell: bash
 
-      - name: Install clang-tidy dependencies
-        run: |
-          if [[ "${{ matrix.os }}" == "macos-14" ]]; then
-            brew install llvm
-            echo 'export PATH="/usr/local/opt/llvm/bin:$PATH"' >> ~/.bash_profile
-            source ~/.bash_profile
-          elif [[ "${{ matrix.os }}" == "windows-2022" ]]; then
-            choco install llvm
-          fi
-        shell: bash
-
       - name: Run clang-tidy
         run: |
-          clang-tidy $(find generated/src -name '*.cpp') -- -std=c++20
-        shell: bash
+          clang-tidy $(find generated/src -name '*.
