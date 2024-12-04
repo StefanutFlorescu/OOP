@@ -106,17 +106,17 @@ jobs:
             }
           
             # Configuring OpenCV_DIR and SFML_DIR for Windows
-            echo "Setting OpenCV and SFML environment variables"
+          echo "Setting OpenCV and SFML environment variables"
           
-            # Use PowerShell correctly to set environment variables in the Windows runner
-            pwsh -Command "$env:OPENCV_DIR = 'C:/tools/opencv/build'; [System.Environment]::SetEnvironmentVariable('OPENCV_DIR', $env:OPENCV_DIR, 'User')"
-            pwsh -Command "$env:SFML_DIR = 'C:/tools/sfml/SFML-2.5.1'; [System.Environment]::SetEnvironmentVariable('SFML_DIR', $env:SFML_DIR, 'User')"
+          # Use PowerShell correctly to set environment variables in the Windows runner
+          pwsh -Command "[System.Environment]::SetEnvironmentVariable('OPENCV_DIR', 'C:/tools/opencv/build', 'User')"
+          pwsh -Command "[System.Environment]::SetEnvironmentVariable('SFML_DIR', 'C:/tools/sfml/SFML-2.5.1', 'User')"
           
-            # Configuring OpenCV_DIR and SFML_DIR for GitHub environment
-            echo "Configuring OpenCV_DIR"
-            echo "C:/tools/opencv/build" >> $GITHUB_ENV
-            echo "Configuring SFML_DIR"
-            echo "C:/tools/sfml/SFML-2.5.1" >> $GITHUB_ENV
+          # Configuring OpenCV_DIR and SFML_DIR for GitHub environment
+          echo "Configuring OpenCV_DIR"
+          echo "C:/tools/opencv/build" >> $GITHUB_ENV
+          echo "Configuring SFML_DIR"
+          echo "C:/tools/sfml/SFML-2.5.1" >> $GITHUB_ENV
 
             # Verifying OpenCV and SFML installation
             echo "Verifying OpenCV and SFML installation"
