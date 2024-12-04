@@ -113,14 +113,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-14, windows-2022]
+        os: [ macos-14, windows-2022 ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Verify src directory
         run: |
-          if [ -d "src" ]; then
+          if [ -d "generated/src" ]; then
             echo "src directory exists."
             ls src
           else
@@ -130,17 +130,15 @@ jobs:
         shell: bash
 
       - name: Install clang-tidy dependencies
-        shell: bash  # Use bash shell
         run: |
-          if [ "${{ matrix.os }}" == "macos-14" ]; then
-            if ! command -v clang-tidy &> /dev/null; then
-              brew install llvm
-            fi
-          elif [ "${{ matrix.os }}" == "windows-2022" ]; then
-            if ! command -v clang-tidy &> /dev/null; then
-              choco install llvm
-            fi
+          if [[ "${{ matrix.os }}" == "macos-14" ]]; then
+            brew install llvm
+            echo 'export PATH="/usr/local/opt/llvm/bin:$PATH"' >> ~/.bash_profile
+            source ~/.bash_profile
+          elif [[ "${{ matrix.os }}" == "windows-2022" ]]; then
+            choco install llvm
           fi
+        shell: bash
 
       - name: Run clang-tidy
         run: |
