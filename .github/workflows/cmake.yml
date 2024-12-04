@@ -69,8 +69,21 @@ jobs:
             brew install opencv sfml cmake llvm
           elif [ "${{ matrix.os }}" == "windows-2022" ]; then
             echo "Installing dependencies for Windows"
-            # Install OpenCV via Chocolatey
-            choco install opencv
+              choco install opencv sfml --yes --limit-output
+              if [ $? -eq 0 ]; then
+              echo "Dependencies installed successfully."
+              else
+              echo "Dependency installation failed." >&2
+              exit 1
+            fi
+            echo "Configuring OpenCV_DIR"
+            echo "C:\\tools\\opencv\\build" >> $GITHUB_ENV
+            
+            echo "Verifying OpenCV installation"
+            if [ ! -d "C:\\tools\\opencv\\build" ]; then
+              echo "Error: OpenCV directory not found at C:\\tools\\opencv\\build" >&2
+              exit 1
+            fi
           fi
 
       - name: Configure CMake
