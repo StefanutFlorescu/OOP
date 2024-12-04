@@ -94,6 +94,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Verify src directory
+        run: |
+          if [ -d "src" ]; then
+            echo "src directory exists."
+            ls src
+          else
+            echo "src directory does not exist or is empty."
+            exit 1
+          fi
+        shell: bash
+
       - name: Install clang-tidy
         run: |
           sudo apt update
@@ -101,7 +112,8 @@ jobs:
 
       - name: Run clang-tidy
         run: |
-          clang-tidy src/*.cpp -- -std=c++20
+          clang-tidy $(find src -name '*.cpp') -- -std=c++20
+        shell: bash
 
   clang-tidy-macos-windows:
     runs-on: ${{ matrix.os }}
@@ -111,6 +123,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Verify src directory
+        run: |
+          if [ -d "src" ]; then
+            echo "src directory exists."
+            ls src
+          else
+            echo "src directory does not exist or is empty."
+            exit 1
+          fi
+        shell: bash
 
       - name: Install clang-tidy dependencies
         shell: bash  # Use bash shell
@@ -126,6 +149,6 @@ jobs:
           fi
 
       - name: Run clang-tidy
-        shell: bash
         run: |
-          clang-tidy src/*.cpp -- -std=c++20
+          clang-tidy $(find src -name '*.cpp') -- -std=c++20
+        shell: bash
