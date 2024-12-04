@@ -81,7 +81,7 @@ jobs:
             choco install sfml --yes --limit-output || {
               echo "SFML package not found in Chocolatey. Attempting manual installation."
               # Download SFML from the official website
-              curl -L https://www.sfml-dev.org/files/SFML-2.5.1-windows-vc15-64-bit.zip -o C:\tools\sfml.zip
+              curl -L https://www.sfml-dev.org/files/SFML-2.5.1-windows-vc15-64-bit.zip -o C:/tools/sfml.zip
               if [ $? -eq 0 ]; then
                 echo "SFML downloaded successfully."
               else
@@ -89,8 +89,8 @@ jobs:
                 exit 1
               fi
 
-              # Unzip SFML to C:\\tools\\sfml
-              unzip C:\\tools\\sfml.zip -d C:\\tools\\sfml
+              # Unzip SFML to C:/tools/sfml
+              unzip C:/tools/sfml.zip -d C:/tools/sfml
               if [ $? -eq 0 ]; then
                 echo "SFML extracted successfully."
               else
@@ -99,26 +99,26 @@ jobs:
               fi
 
               # Verify that SFML was extracted
-              if [ ! -d "C:\\tools\\sfml\\SFML-2.5.1" ]; then
-                echo "Error: SFML directory not found at C:\\tools\\sfml\\SFML-2.5.1" >&2
+              if [ ! -d "C:/tools/sfml/SFML-2.5.1" ]; then
+                echo "Error: SFML directory not found at C:/tools/sfml/SFML-2.5.1" >&2
                 exit 1
               fi
             }
 
             # Configuring OpenCV_DIR and SFML_DIR
             echo "Configuring OpenCV_DIR"
-            echo "C:\\tools\\opencv\\build" >> $GITHUB_ENV
+            echo "C:/tools/opencv/build" >> $GITHUB_ENV
             echo "Configuring SFML_DIR"
-            echo "C:\\tools\\sfml\\SFML-2.5.1" >> $GITHUB_ENV
+            echo "C:/tools/sfml/SFML-2.5.1" >> $GITHUB_ENV
 
             # Verifying OpenCV and SFML installation
             echo "Verifying OpenCV and SFML installation"
-            if [ ! -d "C:\\tools\\opencv\\build" ]; then
-              echo "Error: OpenCV directory not found at C:\\tools\\opencv\\build" >&2
+            if [ ! -d "C:/tools/opencv/build" ]; then
+              echo "Error: OpenCV directory not found at C:/tools/opencv/build" >&2
               exit 1
             fi
-            if [ ! -d "C:\\tools\\sfml\\SFML-2.5.1" ]; then
-              echo "Error: SFML directory not found at C:\\tools\\sfml\\SFML-2.5.1" >&2
+            if [ ! -d "C:/tools/sfml/SFML-2.5.1" ]; then
+              echo "Error: SFML directory not found at C:/tools/sfml/SFML-2.5.1" >&2
               exit 1
             fi
           fi
@@ -158,5 +158,3 @@ jobs:
           else
             echo "Source directory 'src' does not exist or is empty."
           fi
-  
-
