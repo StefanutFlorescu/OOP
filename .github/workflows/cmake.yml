@@ -69,7 +69,8 @@ jobs:
             brew install opencv sfml cmake llvm
           elif [ "${{ matrix.os }}" == "windows-2022" ]; then
             echo "Installing dependencies for Windows"
-            choco install opencv llvm cmake mingw
+            # Install OpenCV via Chocolatey
+            choco install opencv
           fi
 
       - name: Configure CMake
@@ -107,3 +108,5 @@ jobs:
           else
             echo "Source directory 'src' does not exist or is empty."
           fi
+  
+
