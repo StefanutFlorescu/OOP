@@ -89,8 +89,8 @@ jobs:
                 exit 1
               fi
 
-              # Unzip SFML to C:\tools\sfml
-              unzip C:\tools\sfml.zip -d C:\tools\sfml
+              # Unzip SFML to C:\\tools\\sfml
+              unzip C:\\tools\\sfml.zip -d C:\\tools\\sfml
               if [ $? -eq 0 ]; then
                 echo "SFML extracted successfully."
               else
