@@ -1,5 +1,13 @@
 # Image Editor
+**Project Description
 
+A simple image editor is a software application designed to allow users to modify and enhance photos and images. It offers a set of basic features that are easy to use, making it ideal for beginners or those who want to make quick edits without getting lost in complex options.
+Main Features:
+Image Upload: Users can upload images from their file system for editing.
+Resize: Allows users to change the image size while maintaining or not maintaining the aspect ratio.
+Rotate and Distort: Provides options for rotating images at a specific angle or distorting them for artistic effects.
+Brightness and Contrast Adjustment: Users can modify the brightness and contrast of images to enhance clarity and details.
+Basic Filters: Includes simple filters (e.g., sepia, black and white) that can be easily applied.
 ## Descriere proiect
 Un editor de imagine simplu este o aplicație software concepută pentru a permite utilizatorilor să modifice și să îmbunătățească fotografiile și imaginile. Acesta oferă un set de funcționalități de bază care sunt ușor de utilizat, ideal pentru începători sau pentru cei care doresc să efectueze modificări rapide fără a se pierde în opțiuni complexe.
 
