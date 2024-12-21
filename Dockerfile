@@ -27,5 +27,3 @@ RUN mkdir -p build && cd build && \
 
 # Setăm comanda implicită
 CMD ["./build/your_project_executable"]
-
-ENTRYPOINT ["top", "-b"]
