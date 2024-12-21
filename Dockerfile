@@ -1,7 +1,6 @@
-LABEL authors="stefanutflorescu"
 # Alegem imaginea de bază
 FROM ubuntu:22.04
-
+LABEL authors="stefanutflorescu"
 # Setăm variabile de mediu
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Bucharest
