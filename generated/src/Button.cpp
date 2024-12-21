@@ -12,10 +12,10 @@ Button::Button(const float x, const float y, const float width, const float heig
     buttonShape.setSize(sf::Vector2f(width, height)); // Setting the size for the button
     buttonShape.setFillColor(sf::Color(255, 215, 1)); // Setting the base color of the button
 
-    if (!font.loadFromFile("/System/Library/fonts/NewYork.ttf")) // Searching the font for the text
-    {
-        throw ButtonException("could not load font"); // This exception will be caught by the Frame
-    }
+    // Insantiation of the LoadManager Template class with sd::Font
+    LoadManager<sf::Font> fontManager;  // Changed to a more appropriate name
+    const auto mainFont = fontManager.load("mainFont", "/System/Library/fonts/NewYork.ttf");
+    font = *mainFont;
     buttonText.setFont(font); // Setting the font
     buttonText.setString(text); // Setting the text of the button
     buttonText.setCharacterSize(24); // Setting the font size

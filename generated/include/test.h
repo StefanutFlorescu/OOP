@@ -11,6 +11,7 @@
 #include "Image.h"
 #include "Frame.h"
 #include "TextFrame.h"
+#include "LoadManager.h"
 
 #include <iostream>
 int Frame::WIDTH = 860;

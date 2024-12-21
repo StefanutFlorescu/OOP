@@ -1,0 +1,25 @@
+name: Build and Test with Docker
+
+on:
+  push:
+    branches:
+      - test_branch
+      - main
+  pull_request:
+    branches:
+      - test_branch
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t my_project_image .
+
+      - name: Run tests in Docker container
+        run: docker run my_project_image
