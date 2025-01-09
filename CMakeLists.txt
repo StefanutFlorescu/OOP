@@ -16,7 +16,7 @@ else()
 endif()
 
 # Find SFML package dynamically
-find_package(SFML COMPONENTS graphics window system REQUIRED)
+find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
 
 # Create the main executable
 add_executable(OOP-main
