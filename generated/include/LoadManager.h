@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <stdexcept>
+#include "Command.h"
 
 template <typename Resource>
 class LoadManager {
@@ -42,7 +43,47 @@ public:
     void clear() {
         resources.clear();
     }
+
+    //From Command Design Pattern
+    void executeCommand(Command& command) {
+        command.execute();
+    }
 };
+
+template <typename Resource>
+class LoadResourceCommand final : public Command {
+private:
+    LoadManager<Resource>& manager;
+    std::string name;
+    std::string filepath;
+
+public:
+    LoadResourceCommand(LoadManager<Resource>& manager, const std::string& name, const std::string& filepath)
+        : manager(manager), name(name), filepath(filepath) {}
+
+    void execute() override {
+        manager.load(name, filepath);
+        std::cout << "Loaded resource: " << name << " from " << filepath << std::endl;
+    }
+};
+
+template <typename Resource>
+class ClearResourcesCommand : public Command {
+private:
+    LoadManager<Resource>& manager;
+
+public:
+    explicit ClearResourcesCommand(LoadManager<Resource>& manager) : manager(manager) {}
+
+    void execute() override {
+        manager.clear();
+        std::cout << "Cleared all resources." << std::endl;
+    }
+};
+
+
+
+
 
 
 

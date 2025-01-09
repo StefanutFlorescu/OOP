@@ -28,6 +28,7 @@ add_executable(OOP-main
         generated/src/TextFrame.cpp
         generated/src/Helper.cpp
         generated/include/LoadManager.h
+        generated/include/Command.h
 )
 
 # Create the test executable
@@ -45,6 +46,7 @@ add_executable(my_tests
         generated/include/Exception.h
         generated/include/LoadManager.cpp
         generated/include/LoadManager.h
+        generated/include/Command.h
 )
 
 # Specify include directories

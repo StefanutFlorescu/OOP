@@ -13,8 +13,11 @@ Button::Button(const float x, const float y, const float width, const float heig
     buttonShape.setFillColor(sf::Color(255, 215, 1)); // Setting the base color of the button
 
     // Insantiation of the LoadManager Template class with sd::Font
-    LoadManager<sf::Font> fontManager;  // Changed to a more appropriate name
-    const auto mainFont = fontManager.load("mainFont", "/System/Library/fonts/NewYork.ttf");
+    //const auto mainFont = fontManager.load("mainFont", "/System/Library/fonts/NewYork.ttf");
+    //Using the Command Design Pattern
+    LoadResourceCommand<sf::Font> loadFontCommand(fontManager, "mainFont", "/System/Library/fonts/NewYork.ttf");
+    fontManager.executeCommand(loadFontCommand);
+    const auto mainFont = fontManager.get("mainFont");
     font = *mainFont;
     buttonText.setFont(font); // Setting the font
     buttonText.setString(text); // Setting the text of the button

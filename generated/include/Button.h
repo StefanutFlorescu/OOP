@@ -14,6 +14,7 @@
 #include "Filter.h"
 #include "Exception.h"
 #include "LoadManager.h"
+#include "Command.h"
 
 /**
  * @class Button
@@ -30,7 +31,7 @@ protected:
     sf::RectangleShape buttonShape; // Shape of the button
     sf::Text buttonText;            // Text displayed on the button
     sf::Font font;                  // Font used for the text
-
+    LoadManager<sf::Font> fontManager;
     // Checks if the mouse cursor is over the button
     bool isMouseOver(const sf::RenderWindow& window) const;
 
