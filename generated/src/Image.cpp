@@ -68,21 +68,10 @@ void Image::saveToMemory() const {
 
 // Display the resized image in the SFML window
 void Image::displayImage(sf::RenderWindow& window) {
-    sf::Texture texture;
-
-    // Load the resized image from file
-    try
-    {
-        if (!texture.loadFromFile("/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg"))
-            throw std::runtime_error("Could not load image!");
-    }catch (const ImageException& e)
-    {
-        std::cerr << e.what() << std::endl;
-        return;
-    }
-
+    LoadManager<sf::Texture> textureManager;
+    const auto texture = textureManager.load("main", "/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg");
     // Create a sprite from the texture and center it horizontally
-    sf::Sprite sprite(texture);
+    sf::Sprite sprite(*texture);
     sprite.setPosition(static_cast<float>(Frame::getWidth()) / 2 - sprite.getGlobalBounds().width / 2, 25);
 
     // Draw the sprite in the window

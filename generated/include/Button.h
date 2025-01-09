@@ -12,6 +12,9 @@
 #include "Image.h"
 #include "TextFrame.h"
 #include "Filter.h"
+#include "Exception.h"
+#include "LoadManager.h"
+#include "Command.h"
 
 /**
  * @class Button
@@ -28,7 +31,7 @@ protected:
     sf::RectangleShape buttonShape; // Shape of the button
     sf::Text buttonText;            // Text displayed on the button
     sf::Font font;                  // Font used for the text
-
+    LoadManager<sf::Font> fontManager; // Using the template class
     // Checks if the mouse cursor is over the button
     bool isMouseOver(const sf::RenderWindow& window) const;
 
@@ -254,19 +257,32 @@ public:
 class ButtonFactory {
 public:
     enum ButtonType {
-        IMAGE,
-        INPUT,
+        Open,
+        Save,
+        Saturation,
+        Contrast,
+        Blur,
+        Crop
     };
 
     // Factory method to create buttons based on type
-    static std::unique_ptr<Button> createFilter(ButtonType type, float x, float y, float width, float height, const std::string& text = "") {
+    static std::unique_ptr<Button> createButton(const ButtonType type, float x, float y, float width, float height, const std::string& text = "") {
         switch (type) {
-        case IMAGE:
+            //Text frame buttons
+        case Open:
             return std::make_unique<OpenImageButton>(x, y, width, height, text);
-        case INPUT:
-            return std::make_unique<OpenInputButton>(x, y, width, height, text);
+        case Save:
+            return std::make_unique<SaveOutputButton>(x, y, width, height, text);
+        case Saturation:
+            return std::make_unique<SelectSaturationButton>(x, y, width, height, text);
+        case Contrast:
+            return std::make_unique<SelectContrastButton>(x, y, width, height, text);
+        case Blur:
+            return std::make_unique<SelectBlurButton>(x, y, width, height, text);
+        case Crop:
+            return std::make_unique<SelectCropButton>(x, y, width, height, text);
         default:
-            throw std::invalid_argument("Unknown filter type");
+            throw TextFrameException("Unknown filter type");
         }
     }
 };
