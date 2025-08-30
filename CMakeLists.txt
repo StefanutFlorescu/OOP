@@ -29,6 +29,15 @@ add_executable(OOP-main
         generated/src/Helper.cpp
         generated/include/LoadManager.h
         generated/include/Command.h
+        generated/include/ConsoleObserver.h
+        generated/include/FileObserver.h
+        generated/include/IObserver.h
+        generated/include/Logger.h
+        generated/src/FileObserver.cpp
+        generated/src/Logger.cpp
+        generated/src/LoadManager.cpp
+        generated/src/Exception.cpp
+        generated/src/ConsoleObserver.cpp
 )
 
 # Create the test executable
@@ -42,11 +51,18 @@ add_executable(my_tests
         generated/src/Frame.cpp
         generated/src/TextFrame.cpp
         generated/src/Helper.cpp
-        generated/include/Exception.cpp
         generated/include/Exception.h
-        generated/include/LoadManager.cpp
         generated/include/LoadManager.h
         generated/include/Command.h
+        generated/include/ConsoleObserver.h
+        generated/include/FileObserver.h
+        generated/include/IObserver.h
+        generated/include/Logger.h
+        generated/src/FileObserver.cpp
+        generated/src/Logger.cpp
+        generated/src/LoadManager.cpp
+        generated/src/Exception.cpp
+        generated/src/ConsoleObserver.cpp
 )
 
 # Specify include directories

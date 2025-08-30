@@ -5,6 +5,17 @@
 
 // Constructor: Initializes a Frame object with the specified title
 Frame::Frame(const std::string& title) {
+    // Observers
+    Logger* logger = Logger::getInstance();
+
+    static ConsoleObserver consoleObs;
+    static FileObserver fileObs("log.txt");
+
+    logger->addObserver(&consoleObs);
+    logger->addObserver(&fileObs);
+
+    logger->log("Frame created with title: " + title);
+
     try {
         // Initialize all buttons
         initializeButtons();

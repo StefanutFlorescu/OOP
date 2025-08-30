@@ -9,11 +9,15 @@
 #include "Image.h"
 #include "Button.h"
 #include <vector>
+#include "Logger.h"
+#include "ConsoleObserver.h"
+#include "FileObserver.h"
 // Forward declarations of classes used within Frame
 class Button;
 class OpenInputButton;
 class SaveImageButton;
 class FilterButton;
+
 
 /**
  * @class Frame
