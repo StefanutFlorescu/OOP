@@ -12,6 +12,7 @@
 #include "Logger.h"
 #include "ConsoleObserver.h"
 #include "FileObserver.h"
+#include "string.h"
 // Forward declarations of classes used within Frame
 class Button;
 class OpenInputButton;
@@ -46,8 +47,10 @@ private:
     static Frame *instance;
 
 public:
+    static Logger* logger;
     // Friend function for output streaming
     friend std::ostream& operator<<(std::ostream& os, const Frame& frame);
+
 
     static Frame* getInstance(const std::string& title)
     {
@@ -58,6 +61,7 @@ public:
         return instance;
     };
 
+    static void log(const std::string& mes);
 
     //Deleting copy and move semantics to ensure a single instance of Frame
     Frame(const Frame&) = delete;            // Delete copy constructor
@@ -68,6 +72,7 @@ public:
     [[nodiscard]] static int getHeight();      // Retrieves the application height
     static bool switchReady();   // Toggles the READY state
     [[nodiscard]] static bool getReady();      // Retrieves the READY state
+    static Logger* getLogger();
 };
 
 #endif // FRAME_H

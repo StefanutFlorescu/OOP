@@ -47,8 +47,8 @@ BlurFilter::BlurFilter(const std::string& path) : Filter(path) {}
 // Apply Gaussian blur to the image
 void BlurFilter::applyFilter() {
     try {
-        image = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg");
-        originalImage = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg");
+        image = cv::imread("/Users/stefanutflorescu/Documents/OOP/OOP/resources/temp.jpg");
+        originalImage = cv::imread("/Users/stefanutflorescu/Documents/OOP/OOP/resources/original.jpg");
 
         if (image.empty()) {
             throw FilterException("Could not find scaled image!");
@@ -63,7 +63,7 @@ void BlurFilter::applyFilter() {
         cv::GaussianBlur(image, blurred_image, cv::Size(blur, blur), 0);
 
         // Save the blurred image
-        std::string outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg";
+        std::string outputPath = "/Users/stefanutflorescu/Documents/OOP/OOP/resources/temp.jpg";
         if (cv::imwrite(outputPath, blurred_image)) {
             std::cout << "Blurred image saved successfully to " << outputPath << std::endl;
         } else {
@@ -74,7 +74,7 @@ void BlurFilter::applyFilter() {
         cv::Mat blurred_original_image;
         cv::GaussianBlur(originalImage, blurred_original_image, cv::Size(15, 15), 0);
 
-        outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg";
+        outputPath = "/Users/stefanutflorescu/Documents/OOP/OOP/resources/original.jpg";
         if (cv::imwrite(outputPath, blurred_original_image)) {
             std::cout << "Blurred original image saved successfully to " << outputPath << std::endl;
         } else {
@@ -93,7 +93,7 @@ CropFilter::CropFilter(const std::string& path) : Filter(path) {}
 // Crop the image to the specified region of interest (ROI)
 void CropFilter::applyFilter() {
     try {
-        const cv::Mat src = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg");
+        const cv::Mat src = cv::imread("/Users/stefanutflorescu/Documents/OOP/OOP/resources/temp.jpg");
         if (src.empty()) {
             throw FilterException("Could not find image!");
         }
@@ -102,14 +102,14 @@ void CropFilter::applyFilter() {
         const cv::Mat dst = src(roi);  // Crop the image
 
         // Save the cropped image
-        std::string outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg";
+        std::string outputPath = "/Users/stefanutflorescu/Documents/OOP/OOP/resources/original.jpg";
         if (cv::imwrite(outputPath, dst)) {
             std::cout << "Cropped image saved successfully to " << outputPath << std::endl;
         } else {
             throw FilterException("Error: Could not save the cropped image!");
         }
 
-        outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg";
+        outputPath = "/Users/stefanutflorescu/Documents/OOP/OOP/resources/temp.jpg";
         if (cv::imwrite(outputPath, dst)) {
             std::cout << "Cropped image saved successfully to " << outputPath << std::endl;
         } else {
@@ -134,12 +134,12 @@ ContrastFilter::ContrastFilter(const std::string& path) : Filter(path) {}
 // Apply contrast adjustment to the image
 void ContrastFilter::applyFilter() {
     try {
-        image = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg");
+        image = cv::imread("/Users/stefanutflorescu/Documents/OOP/OOP/resources/original.jpg");
         if (image.empty()) {
             throw FilterException("Could not find the original image!");
         }
 
-        originalImage = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg");
+        originalImage = cv::imread("/Users/stefanutflorescu/Documents/OOP/OOP/resources/temp.jpg");
         if (originalImage.empty()) {
             throw FilterException("Could not find the temp image!");
         }
@@ -151,14 +151,14 @@ void ContrastFilter::applyFilter() {
         adjustContrast(image, dst2, contrast); // Adjust contrast for the scaled image
 
         // Save the contrasted image
-        std::string outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg";
+        std::string outputPath = "/Users/stefanutflorescu/Documents/OOP/OOP/resources/original.jpg";
         if (cv::imwrite(outputPath, dst2)) {
             std::cout << "Contrasted image saved successfully to " << outputPath << std::endl;
         } else {
             throw FilterException("Error: Could not save the contrasted image!");
         }
 
-        outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg";
+        outputPath = "/Users/stefanutflorescu/Documents/OOP/OOP/resources/temp.jpg";
         if (cv::imwrite(outputPath, dst)) {
             std::cout << "Contrasted image saved successfully to " << outputPath << std::endl;
         } else {
@@ -192,11 +192,11 @@ SaturationFilter::SaturationFilter(const std::string& path) : Filter(path) {}
 // Apply saturation adjustment to the image
 void SaturationFilter::applyFilter() {
     try {
-        image = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg");
+        image = cv::imread("/Users/stefanutflorescu/Documents/OOP/OOP/resources/temp.jpg");
         if (image.empty()) {
             throw FilterException("Could not find the scaled image!");
         }
-        originalImage = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg");
+        originalImage = cv::imread("/Users/stefanutflorescu/Documents/OOP/OOP/resources/original.jpg");
         if (originalImage.empty()) {
             throw FilterException("Could not find the original image!");
         }
@@ -208,16 +208,20 @@ void SaturationFilter::applyFilter() {
         adjustSaturation(originalImage, dst2, saturation); // Adjust saturation
 
         // Save the adjusted image
-        std::string outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg";
+        std::string outputPath = "/Users/stefanutflorescu/Documents/OOP/OOP/resources/original.jpg";
         if (cv::imwrite(outputPath, dst2)) {
-            std::cout << "Saturation-adjusted image saved successfully to " << outputPath << std::endl;
+            //std::cout << "Saturation-adjusted image saved successfully to " << outputPath << std::endl;
+            const std::string logMes = "Saturation-adjusted image saved successfully to " + outputPath;
+            Frame::log(logMes);
         } else {
             throw FilterException("Error: Could not save the adjusted image!");
         }
 
-        outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg";
+        outputPath = "/Users/stefanutflorescu/Documents/OOP/OOP/resources/temp.jpg";
         if (cv::imwrite(outputPath, dst)) {
             std::cout << "Saturation-adjusted image saved successfully to " << outputPath << std::endl;
+            const std::string logMes = "Saturation-adjusted image saved successfully to " + outputPath;
+            Frame::log(logMes);
         } else {
             throw FilterException("Error: Could not save the adjusted image!");
         }

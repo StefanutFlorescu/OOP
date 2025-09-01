@@ -6,7 +6,7 @@
 // Constructor: Initializes a Frame object with the specified title
 Frame::Frame(const std::string& title) {
     // Observers
-    Logger* logger = Logger::getInstance();
+    logger = Logger::getInstance();
 
     static ConsoleObserver consoleObs;
     static FileObserver fileObs("log.txt");
@@ -103,6 +103,7 @@ void Frame::handleEvents(sf::RenderWindow& window) const {
         while (window.pollEvent(event)) {
             // Close the window if the close event is triggered
             if (event.type == sf::Event::Closed) {
+                logger->log("Closing Frame");
                 window.close();
             }
 
@@ -178,4 +179,14 @@ bool Frame::switchReady() {
 // Static member function: Get the current state of the READY flag
 bool Frame::getReady() {
     return READY;
+}
+
+static Logger* getLogger()
+{
+    return Logger::getInstance();
+}
+
+void Frame::log(const std::string& mes)
+{
+    Logger::getInstance()->log(mes);
 }

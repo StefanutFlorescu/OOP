@@ -80,7 +80,7 @@ void Button::update(sf::RenderWindow& window, const sf::Event& event)
         buttonShape.setFillColor(sf::Color::Yellow);
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
         {
-            std::cout << "Button clicked!" << std::endl;
+            Frame::log("Button::update");
         }
     }
     else
@@ -118,6 +118,7 @@ void OpenImageButton::update(sf::RenderWindow& window, const sf::Event& event)
             {
                 image = new Image(imagePath);
                 Frame::switchReady(); // This will make the app render the image
+                Frame::log("Image updated");
             }
         }
     }
@@ -209,26 +210,27 @@ void SaveOutputButton::update(sf::RenderWindow& window, const sf::Event& event)
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
         {
             // Verify if the image file exists at the specified path
-            if (!std::filesystem::exists("/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg"))
+            if (!std::filesystem::exists("/Users/stefanutflorescu/Documents/OOP/OOP/resources/original.jpg"))
             {
                 std::cerr << "Error: Image file does not exist at path: "
-                          << "/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg" << std::endl;
+                          << "/Users/stefanutflorescu/Documents/OOP/OOP/resources/original.jpg" << std::endl;
             }
             else
             {
                 // Read the image file
-                const cv::Mat image = cv::imread("/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg",
+                const cv::Mat image = cv::imread("/Users/stefanutflorescu/Documents/OOP/OOP/resources/original.jpg",
                                                  cv::IMREAD_COLOR);
 
                 // Attempt to save the image
-                if (cv::imwrite(outputPath, image))
-                {
-                    std::cout << "Image saved successfully to " << outputPath << std::endl;
-                    Frame::switchReady();
-                }
-                else
-                {
-                    std::cerr << "Failed to save the image!" << std::endl;
+                try {
+                    if (cv::imwrite(outputPath, image)) {
+                        std::cout << "Image saved successfully to " << outputPath << std::endl;
+                        Frame::switchReady();
+                    }
+                } catch (const cv::Exception& e) {
+                    std::cerr << "OpenCV error while saving image: " << e.what() << std::endl;
+                } catch (...) {
+                    std::cerr << "Unknown error while saving image!" << std::endl;
                 }
             }
         }

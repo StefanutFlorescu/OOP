@@ -11,7 +11,7 @@ TEST_CASE("Load Manager") {
     // Test loading a texture
     try {
         LoadManager<sf::Texture> textureManager;
-        auto backgroundTexture = textureManager.load("main", "/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg");
+        auto backgroundTexture = textureManager.load("main", "/Users/stefanutflorescu/Documents/OOP/OOP/resources/temp.jpg");
 
         if (!backgroundTexture) {
             throw std::runtime_error("backgroundTexture is null after loading.");

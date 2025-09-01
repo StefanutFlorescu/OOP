@@ -63,7 +63,6 @@ public:
 
     void execute() override {
         manager.load(name, filepath);
-        std::cout << "Loaded resource: " << name << " from " << filepath << std::endl;
     }
 };
 

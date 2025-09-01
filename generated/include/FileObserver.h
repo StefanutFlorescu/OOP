@@ -13,8 +13,8 @@ class FileObserver : public IObserver {
 private:
     std::ofstream file;
 public:
-    FileObserver(const std::string& filename);
-    ~FileObserver();
+    explicit FileObserver(const std::string& filename);
+    ~FileObserver() override;
 
     void update(const std::string& message) override;
 };

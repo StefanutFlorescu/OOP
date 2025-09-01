@@ -50,7 +50,7 @@ void Image::saveToMemory() const {
     cv::resize(image, resized, cv::Size(scaledWidth, scaledHeight), cv::INTER_LINEAR);
 
     // Save the resized image to a temporary file
-    std::string outputPath = "/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg";
+    std::string outputPath = "/Users/stefanutflorescu/Documents/OOP/OOP/resources/temp.jpg";
     if (cv::imwrite(outputPath, resized)) {
         std::cout << "Image saved successfully to " << outputPath << std::endl;
     } else {
@@ -58,7 +58,7 @@ void Image::saveToMemory() const {
     }
 
     // Save the original image to another file
-    std::string outputPath2 = "/Users/stefanutflorescu/Downloads/OOP-main/resources/original.jpg";
+    std::string outputPath2 = "/Users/stefanutflorescu/Documents/OOP/OOP/resources/original.jpg";
     if (cv::imwrite(outputPath2, image)) {
         std::cout << "Image saved successfully to " << outputPath2 << std::endl;
     } else {
@@ -69,7 +69,7 @@ void Image::saveToMemory() const {
 // Display the resized image in the SFML window
 void Image::displayImage(sf::RenderWindow& window) {
     LoadManager<sf::Texture> textureManager;
-    const auto texture = textureManager.load("main", "/Users/stefanutflorescu/Downloads/OOP-main/resources/temp.jpg");
+    const auto texture = textureManager.load("main", "/Users/stefanutflorescu/Documents/OOP/OOP/resources/temp.jpg");
     // Create a sprite from the texture and center it horizontally
     sf::Sprite sprite(*texture);
     sprite.setPosition(static_cast<float>(Frame::getWidth()) / 2 - sprite.getGlobalBounds().width / 2, 25);
